@@ -1,0 +1,9 @@
+.env
+node_modules/
+
+# Claude Code per-user / runtime state
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+
+# Agent-private memory (kept local; not shared)
+.claude/agent-memory/

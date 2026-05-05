@@ -1,0 +1,26 @@
+{
+  "skill_name": "compose-layout",
+  "evals": [
+    {
+      "id": 1,
+      "name": "happy-path-button",
+      "prompt": "Build the Figma design at https://www.figma.com/design/Rt3p2w3NtM1X7d9NzDlMdO/Aperia-Shadcn?node-id=1037-71589&m=dev as a page in the $TARGET_REPO repo (sibling of ai-team-poc under the shared REPOS parent). For testing purposes, auto-confirm the inventory in Phase 3 and proceed straight to writing the file. Note: this design is a single button — treat it as a tiny demo page so the workflow can run end-to-end.",
+      "expected_output": "A page file generated for $TARGET_REPO that imports a Button from the design system library named in the repo's package.json, with no locally-defined primitives, no shadcn add commands, and no hardcoded colors. The skill should also produce an inventory naming the components and the proposed output path before writing.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "happy-path-larger-component",
+      "prompt": "Compose the Figma design at https://www.figma.com/design/Rt3p2w3NtM1X7d9NzDlMdO/Aperia-Shadcn?node-id=1037-71583&m=dev as a page in $TARGET_REPO (sibling of ai-team-poc). For testing purposes, auto-confirm the inventory in Phase 3 and proceed.",
+      "expected_output": "A page file generated for $TARGET_REPO composing the multiple components from the Figma design, all imported from the library named in the repo's package.json. Tokens (semantic Tailwind classes like bg-primary) used rather than raw colors. Inventory presented before writing.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "missing-target-repo",
+      "prompt": "Implement https://www.figma.com/design/Rt3p2w3NtM1X7d9NzDlMdO/Aperia-Shadcn?node-id=1037-71589&m=dev as a page.",
+      "expected_output": "The skill should recognize the target_repo parameter is missing and stop to ask the user, instead of guessing a repo or trying to proceed. No files should be written.",
+      "files": []
+    }
+  ]
+}

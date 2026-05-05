@@ -1,0 +1,43 @@
+{
+  "eval_id": 1,
+  "eval_name": "happy-path-button",
+  "configuration": "without_skill",
+  "expectations": [
+    {
+      "text": "Detected library is $SHADCN_COMPONENT_LIBRARY_PACKAGE (the one Code Connect points to)",
+      "passed": false,
+      "evidence": "Used @mui/material instead \u00e2\u20ac\u201d followed file-pattern matching of existing pages rather than Code Connect mapping. Library mismatch."
+    },
+    {
+      "text": "All primitive imports come from the library's root export (no deep paths)",
+      "passed": true,
+      "evidence": "Box, Button imported from @mui/material root (but library is wrong)"
+    },
+    {
+      "text": "No shadcn add commands or local primitive creation",
+      "passed": true,
+      "evidence": "No shadcn add; no locally-defined primitives"
+    },
+    {
+      "text": "Uses semantic Tailwind tokens instead of raw hex colors",
+      "passed": false,
+      "evidence": "Uses MUI sx with raw values: borderRadius: '8px', fontFamily: 'Geist, sans-serif', fontSize: '14px', fontWeight: 600, etc. \u00e2\u20ac\u201d no token-driven styling"
+    },
+    {
+      "text": "Inventory presented before writing (Phase 3 followed)",
+      "passed": false,
+      "evidence": "No discrete inventory phase \u00e2\u20ac\u201d proceeded directly to file write; notes describe components but post-hoc"
+    },
+    {
+      "text": "Output page.tsx file exists with valid JSX",
+      "passed": true,
+      "evidence": "page.tsx exists, 60 lines, default-exports SignInWithEmailPage"
+    }
+  ],
+  "summary": {
+    "pass_rate": 0.5,
+    "passed": 3,
+    "failed": 3,
+    "total": 6
+  }
+}

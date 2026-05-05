@@ -1,0 +1,43 @@
+{
+  "eval_id": 2,
+  "eval_name": "happy-path-larger-component",
+  "configuration": "with_skill",
+  "expectations": [
+    {
+      "text": "Detected library is $SHADCN_COMPONENT_LIBRARY_PACKAGE (the one Code Connect points to)",
+      "passed": true,
+      "evidence": "page.tsx imports Button, Input, Separator from '$SHADCN_COMPONENT_LIBRARY_PACKAGE'; notes confirm detection"
+    },
+    {
+      "text": "All primitive imports come from the library's root export (no deep paths)",
+      "passed": true,
+      "evidence": "Single barrel import from '$SHADCN_COMPONENT_LIBRARY_PACKAGE' \u00e2\u20ac\u201d no deep paths"
+    },
+    {
+      "text": "No shadcn add commands or local primitive creation",
+      "passed": true,
+      "evidence": "No shadcn add; the inline GithubIcon is a local SVG inside the page (not an exported primitive added to the design system) and is flagged as a library gap with a 'replace when library Icon lands' comment, matching the existing AskNanciWelcomePage precedent"
+    },
+    {
+      "text": "Uses semantic Tailwind tokens instead of raw hex colors",
+      "passed": true,
+      "evidence": "Uses bg-background, text-foreground, text-muted-foreground, underline-offset-4. Some pixel-level Tailwind arbitrary values for the H3 heading (text-[24px], leading-[28.8px], tracking-[-1px]) \u00e2\u20ac\u201d flagged honestly in notes since the library does not expose a heading-token class"
+    },
+    {
+      "text": "Inventory presented before writing (Phase 3 followed)",
+      "passed": true,
+      "evidence": "notes.md includes a detailed Phase 3 inventory table with components, Code Connect status, imports, and library gaps clearly enumerated"
+    },
+    {
+      "text": "Output page.tsx file exists with valid JSX",
+      "passed": true,
+      "evidence": "page.tsx exists, 124 lines, exports CreateAccountPage with form, two buttons, separator row"
+    }
+  ],
+  "summary": {
+    "pass_rate": 1.0,
+    "passed": 6,
+    "failed": 0,
+    "total": 6
+  }
+}

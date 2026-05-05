@@ -1,0 +1,12 @@
+{
+  "name": "ai-team-poc",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "tokens:pull": "node scripts/fetch-figma-vars.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "eval_id": 1,
+  "eval_name": "happy-path-button",
+  "configuration": "with_skill",
+  "expectations": [
+    {
+      "text": "Detected library is $SHADCN_COMPONENT_LIBRARY_PACKAGE (the one Code Connect points to)",
+      "passed": true,
+      "evidence": "page.tsx imports { Button } from '$SHADCN_COMPONENT_LIBRARY_PACKAGE'; notes.md confirms detection from package.json"
+    },
+    {
+      "text": "All primitive imports come from the library's root export (no deep paths)",
+      "passed": true,
+      "evidence": "Single import: import { Button } from '$SHADCN_COMPONENT_LIBRARY_PACKAGE' \u00e2\u20ac\u201d root barrel only"
+    },
+    {
+      "text": "No shadcn add commands or local primitive creation",
+      "passed": true,
+      "evidence": "Page file contains no shadcn add invocations and defines no local components"
+    },
+    {
+      "text": "Uses semantic Tailwind tokens instead of raw hex colors",
+      "passed": true,
+      "evidence": "Uses bg-background; relies on library's variant classes for button color (no hex values in page)"
+    },
+    {
+      "text": "Inventory presented before writing (Phase 3 followed)",
+      "passed": true,
+      "evidence": "notes.md contains Phase 3 inventory section listing component, props, import, mapping status"
+    },
+    {
+      "text": "Output page.tsx file exists with valid JSX",
+      "passed": true,
+      "evidence": "page.tsx exists, 13 lines, default-exports SignInWithEmailPage rendering Button"
+    }
+  ],
+  "summary": {
+    "pass_rate": 1.0,
+    "passed": 6,
+    "failed": 0,
+    "total": 6
+  }
+}

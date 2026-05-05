@@ -1,0 +1,33 @@
+{
+  "eval_id": 3,
+  "eval_name": "missing-target-repo",
+  "configuration": "without_skill",
+  "expectations": [
+    {
+      "text": "Did not write any page file (no implementation when target repo is missing)",
+      "passed": true,
+      "evidence": "Only response.md exists in outputs/ \u00e2\u20ac\u201d no page.tsx written"
+    },
+    {
+      "text": "Stopped to explicitly ask for the missing target_repo parameter",
+      "passed": true,
+      "evidence": "response.md asks the user for the target repo before proceeding"
+    },
+    {
+      "text": "Did not invent or guess a default target repo",
+      "passed": true,
+      "evidence": "Suggested possible repo names as examples (aperia-shadcn, aperia-web) but did not assume one; deferred to user"
+    },
+    {
+      "text": "Did not fetch Figma data before having both parameters",
+      "passed": true,
+      "evidence": "response.md describes Figma fetch as a future step once target is provided; only 6 tool uses, completion in 38s \u00e2\u20ac\u201d no MCP calls"
+    }
+  ],
+  "summary": {
+    "pass_rate": 1.0,
+    "passed": 4,
+    "failed": 0,
+    "total": 4
+  }
+}

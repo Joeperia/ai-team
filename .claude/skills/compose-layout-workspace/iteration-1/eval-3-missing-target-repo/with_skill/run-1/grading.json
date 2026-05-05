@@ -1,0 +1,33 @@
+{
+  "eval_id": 3,
+  "eval_name": "missing-target-repo",
+  "configuration": "with_skill",
+  "expectations": [
+    {
+      "text": "Did not write any page file (no implementation when target repo is missing)",
+      "passed": true,
+      "evidence": "Only response.md exists in outputs/ \u00e2\u20ac\u201d no page.tsx written"
+    },
+    {
+      "text": "Stopped to explicitly ask for the missing target_repo parameter",
+      "passed": true,
+      "evidence": "response.md opens with 'Missing input: target repository' and lists target_repo as not provided; explicitly requests the value before proceeding"
+    },
+    {
+      "text": "Did not invent or guess a default target repo",
+      "passed": true,
+      "evidence": "response.md shows no guessed default; lists candidate types but defers the choice to the user"
+    },
+    {
+      "text": "Did not fetch Figma data before having both parameters",
+      "passed": true,
+      "evidence": "response.md describes Phase 1 (orient) as the next step once the user provides target_repo; agent's tool log (3 tool uses, completion in 157s) is consistent with no Figma fetch"
+    }
+  ],
+  "summary": {
+    "pass_rate": 1.0,
+    "passed": 4,
+    "failed": 0,
+    "total": 4
+  }
+}

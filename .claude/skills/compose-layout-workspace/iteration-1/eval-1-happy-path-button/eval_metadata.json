@@ -1,0 +1,6 @@
+{
+  "eval_id": 1,
+  "eval_name": "happy-path-button",
+  "prompt": "Build the Figma design at https://www.figma.com/design/Rt3p2w3NtM1X7d9NzDlMdO/Aperia-Shadcn?node-id=1037-71589&m=dev as a page in the $TARGET_REPO repo (sibling of ai-team-poc under the shared REPOS parent). For testing purposes, auto-confirm the inventory in Phase 3 and proceed straight to writing the file. Note: this design is a single button — treat it as a tiny demo page so the workflow can run end-to-end.",
+  "assertions": []
+}

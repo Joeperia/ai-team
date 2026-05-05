@@ -1,0 +1,43 @@
+{
+  "eval_id": 2,
+  "eval_name": "happy-path-larger-component",
+  "configuration": "without_skill",
+  "expectations": [
+    {
+      "text": "Detected library is $SHADCN_COMPONENT_LIBRARY_PACKAGE (the one Code Connect points to)",
+      "passed": false,
+      "evidence": "Used $TARGET_REPO_PACKAGE/common (MUI-wrapped Tap-prefixed library) \u00e2\u20ac\u201d chose based on existing-file pattern matching rather than Code Connect mapping"
+    },
+    {
+      "text": "All primitive imports come from the library's root export (no deep paths)",
+      "passed": false,
+      "evidence": "Imports from $TARGET_REPO_PACKAGE/common subpath, plus deep imports from @mui/icons-material/GitHub and @mui/material/styles"
+    },
+    {
+      "text": "No shadcn add commands or local primitive creation",
+      "passed": true,
+      "evidence": "No shadcn add; no exported primitives created (uses styled() for layout pieces internal to the page)"
+    },
+    {
+      "text": "Uses semantic Tailwind tokens instead of raw hex colors",
+      "passed": false,
+      "evidence": "Uses MUI styled and sx with raw padding, gap, fontSize values; no Tailwind token classes used at all"
+    },
+    {
+      "text": "Inventory presented before writing (Phase 3 followed)",
+      "passed": false,
+      "evidence": "Proceeded directly to writing; notes summarize components used but no discrete pre-write inventory phase"
+    },
+    {
+      "text": "Output page.tsx file exists with valid JSX",
+      "passed": true,
+      "evidence": "page.tsx exists, 175 lines, exports CreateAccountPage"
+    }
+  ],
+  "summary": {
+    "pass_rate": 0.3333,
+    "passed": 2,
+    "failed": 4,
+    "total": 6
+  }
+}
