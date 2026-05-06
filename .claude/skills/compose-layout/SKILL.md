@@ -32,7 +32,7 @@ Other related variables, populated from the environment rather than from skill i
 
 ## Workflow
 
-Follow these four phases in order. Do not skip ahead — each phase de-risks the next.
+Follow these six phases in order. Do not skip ahead — each phase de-risks the next.
 
 ### Phase 1: Orient to the target repository
 
@@ -103,11 +103,38 @@ When prompting:
 If the user confirms:
 
 - Write a story file that covers the default rendering of the composed layout.
+- **Match the Storybook `layout` parameter to the Figma frame's sizing intent — do not copy it from a sibling story.** Read the design context returned by `get_design_context` for the Figma frame:
+  - **Fluid / fill-parent layouts** — frames that emit `size-full`, `content-stretch`, `flex-1`, or whose root element spans via `w-full` — use `layout: "padded"` (gives canvas padding while letting the component stretch) or `layout: "fullscreen"` (no padding). `layout: "centered"` will shrink Storybook's canvas to content, and `w-full` will have no room to span into.
+  - **Fixed-dimension compositions** — frames that emit explicit `w-[Npx] h-[Npx]` and contain no fluid children — use `layout: "centered"`.
+  - When unsure, default to `"padded"` and note the choice in the closing summary so the user can correct it.
 - Include a story per meaningful variant or state visible in the Figma design (e.g. empty, loaded, error) when the data clearly supports it; otherwise stick to a single default story.
 - Use the same design system imports and design tokens as the component itself — do not introduce new primitives in the story.
 - Report the story file path when done.
 
 If the user declines or asks to skip, stop cleanly without writing anything further.
+
+### Phase 6: Verify the implementation against the design
+
+After the component file is written (and a Storybook story has been offered or created), invoke the `design-verifier` subagent via the Agent tool to confirm the implementation matches the Figma source.
+
+Pass these inputs in the spawning prompt:
+
+- `$FIGMA_LINK` — the figma_link parameter from this run
+- `$TARGET_REPO` — the target_repo path
+- `$COMPONENT_PATH` — the path of the file written in Phase 4
+- `$TARGET_REPO_PACKAGE` — the design system package name detected in Phase 1
+- `$STORY_PATH` — the story file path from Phase 5, if one was created
+
+The subagent returns a structured report with a verdict (`PASS` | `PASS_WITH_NOTES` | `FAIL`) and severity-tagged discrepancies (CRITICAL, MAJOR, MINOR).
+
+When the report comes back:
+
+- Surface the verdict and the full **Discrepancies** section to the user, preserving severity tags.
+- For each item in the report's **Auto-fixable** list, ask the user "Apply suggested fix?" before editing the file. Apply only the fixes the user explicitly approves.
+- For items in **Needs human review**, list them but do not act without direction.
+- If the verdict is `FAIL`, label the run as incomplete in your closing summary, even if the file itself was written successfully.
+
+Verification is a hard step, not a courtesy — its purpose is to catch Code Connect drift, variant mismatches, and token violations that are easy to miss at write time. Do not skip it.
 
 ## Operating rules
 
