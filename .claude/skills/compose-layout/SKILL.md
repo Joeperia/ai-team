@@ -32,7 +32,7 @@ Other related variables, populated from the environment rather than from skill i
 
 ## Workflow
 
-Follow these six phases in order. Do not skip ahead — each phase de-risks the next.
+Follow these five phases in order. Do not skip ahead — each phase de-risks the next.
 
 ### Phase 1: Orient to the target repository
 
@@ -77,10 +77,16 @@ Before writing any code, present a concise inventory containing:
 - Components with **inferred library equivalents** (no mapping, but a barrel export matched by name), listed with the inferred import and the prop signature read from the library source — call these out so the user can confirm or correct
 - Components that will be **improvised** as plain HTML + library design tokens, with the proposed element and class set
 - Any genuine blockers (e.g. the library is not installed, the design needs a primitive type that does not exist anywhere) — these still halt the run
-- **The proposed output file** — a new, standalone, importable component file. Include:
+- **The proposed output file** — a standalone, importable component file. Include:
   - A proposed component name (derived from the Figma frame name, PascalCased)
   - A proposed file path that matches the repo's existing component-location convention detected in Phase 1
-  - An explicit note that this is a *new* file — the skill must never merge the design into `App.tsx`, `main.tsx`, `index.tsx`, `app/page.tsx`, `pages/_app.*`, or any other entry-point/router file
+  - An explicit note that the skill must never merge the design into `App.tsx`, `main.tsx`, `index.tsx`, `app/page.tsx`, `pages/_app.*`, or any other entry-point/router file
+  - **Existing-file check** — before presenting the inventory, test whether a file already exists at the proposed path. If it does, surface that fact prominently in the inventory and ask the user to choose:
+    - **Replace** — overwrite the existing file with the freshly composed output, discarding its current contents
+    - **Update** — edit the existing file in place to bring it in line with the new Figma design, preserving any handwritten logic outside the parts the design dictates (event handlers, state, callbacks, data wiring)
+    - **Write to a different path** — supply an alternative path, in which case the new path is the one to check for conflicts and the existing file is left untouched
+
+    Never overwrite or update silently. Do not assume one option over another based on apparent code quality — wait for an explicit choice.
 - Any ambiguous layout or composition decisions that need resolving
 
 Wait for the user to confirm or correct this inventory — including the proposed component name and path — before implementing. Treat this as a hard checkpoint, not a courtesy.
@@ -91,7 +97,11 @@ This checkpoint exists specifically to catch errors early. It is far cheaper to 
 
 Once the inventory is confirmed:
 
-- Write the component to the confirmed path as a **new file**. Do not edit, append to, or otherwise modify entry-point files (`App.tsx`, `main.tsx`, `index.tsx`, `app/page.tsx`, `pages/_app.*`, router config, etc.). Wiring the new component into the app is out of scope for this skill — the user will import it themselves.
+- Write the component at the confirmed path, honoring the user's Phase 3 choice:
+  - **New file** (no prior conflict) — create the file fresh with the fully composed output.
+  - **Replace** — overwrite the existing file at the path with the fully composed output. Do not attempt to preserve any of the prior contents.
+  - **Update** — edit the existing file in place. Apply the structural, layout, and styling changes the new design requires, but preserve handwritten logic that the design does not dictate (event handlers, props, state, hooks, callbacks, data wiring, comments). Use targeted edits (Edit tool, not Write) so unrelated code is not disturbed. If a clean update is impossible (e.g. the existing file's structure is incompatible with the new design), stop and tell the user — do not silently fall back to Replace.
+- In all cases, do not edit, append to, or otherwise modify entry-point files (`App.tsx`, `main.tsx`, `index.tsx`, `app/page.tsx`, `pages/_app.*`, router config, etc.). Wiring the new component into the app is out of scope for this skill — the user will import it themselves.
 - Implement each component instance per the tier resolved in Phase 2: confirmed mappings use the exact import path and props from Code Connect; inferred mappings use the library export resolved by name with the prop signature read from source; improvised cases use plain HTML elements styled with library design tokens
 - Compose the layout to match the Figma structure
 - **Render every Figma text node with its exact string** — do not paraphrase, abbreviate, sentence-case a Figma title, or substitute placeholder copy ("Button", "Label", lorem ipsum) when Figma has real copy. Preserve punctuation, casing, and quote style. Text supplied via props (`title`, `label`, `placeholder`, `aria-label`) counts.
@@ -122,28 +132,7 @@ If the user confirms:
 
 If the user declines or asks to skip, stop cleanly without writing anything further.
 
-### Phase 6: Verify the implementation against the design
-
-After the component file is written (and a Storybook story has been offered or created), invoke the `design-verifier` subagent via the Agent tool to confirm the implementation matches the Figma source.
-
-Pass these inputs in the spawning prompt:
-
-- `$FIGMA_LINK` — the figma_link parameter from this run
-- `$TARGET_REPO` — the target_repo path
-- `$COMPONENT_PATH` — the path of the file written in Phase 4
-- `$TARGET_REPO_PACKAGE` — the design system package name detected in Phase 1
-- `$STORY_PATH` — the story file path from Phase 5, if one was created
-
-The subagent returns a structured report with a verdict (`PASS` | `PASS_WITH_NOTES` | `FAIL`) and severity-tagged discrepancies (CRITICAL, MAJOR, MINOR).
-
-When the report comes back:
-
-- Surface the verdict and the full **Discrepancies** section to the user, preserving severity tags.
-- For each item in the report's **Auto-fixable** list, ask the user "Apply suggested fix?" before editing the file. Apply only the fixes the user explicitly approves.
-- For items in **Needs human review**, list them but do not act without direction.
-- If the verdict is `FAIL`, label the run as incomplete in your closing summary, even if the file itself was written successfully.
-
-Verification is a hard step, not a courtesy — its purpose is to catch Code Connect drift, variant mismatches, and token violations that are easy to miss at write time. Do not skip it.
+In the closing summary, mention that the user can optionally run `/verify-design <figma-link> <component-path>` to get a fidelity report against the Figma source. Do not invoke that verification yourself — leave it to the user to decide.
 
 ## Operating rules
 
@@ -155,7 +144,7 @@ These rules exist because this skill operates on a *target* repo while the desig
 - **Never invent component APIs.** When Code Connect provides a mapping, use the exact props shown. When it does not, derive props from the library's actual exports — do not pass props the library does not declare.
 - **Never import from deep paths inside the library's build output** — use the library's root export only.
 - **Never modify the design system library itself** from this workflow. You operate only on the target repository.
-- **Never modify entry-point or router files.** The skill's only file output is the new, standalone component file (and optionally a Storybook story if the user opts in during Phase 5). Importing or rendering the new component anywhere else is the user's responsibility.
+- **Never modify entry-point or router files.** The skill's only file output is a standalone component file — created fresh, replaced wholesale, or updated in place per the user's Phase 3 choice — plus optionally a Storybook story if the user opts in during Phase 5. Importing or rendering the new component anywhere else is the user's responsibility.
 
 ## When to stop and escalate
 
@@ -164,7 +153,7 @@ Stop and ask the user when:
 - A Figma component has no Code Connect mapping, no library export matched by name, and no plain-HTML fallback that fits (i.e. the design needs a primitive type the library does not expose)
 - The target repository does not have the required library installed
 - The project's conventions conflict with what Code Connect suggests
-- The target output path is ambiguous or would overwrite existing work
+- The target output path is ambiguous (an existing-file conflict at the proposed path is handled interactively in Phase 3 — Replace / Update / new path — not by halting)
 - The design implies business logic (auth, data fetching, form submission, routing) that exceeds layout composition
 - The repo has no `components/` directory and the user has not specified where the new file should go (propose a default and confirm rather than guessing silently)
 

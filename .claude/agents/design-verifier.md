@@ -1,14 +1,9 @@
 ---
 name: design-verifier
 description: |
-  Verify that a generated component implementation matches its Figma source design. Use proactively after the compose-layout skill writes a new component file — invoke this agent to confirm Code Connect compliance, variant correctness, token usage, structural fidelity, spacing, typography, colors, borders, shadows, icons, and text content. Also use whenever the user asks "does this match the figma", "verify the layout against the design", "check that the implementation matches", "is this faithful to the design", or pairs a Figma reference with a generated component path and asks to validate it.
+  Verify that a generated component implementation matches its Figma source design. Invoke this agent to confirm Code Connect compliance, variant correctness, token usage, structural fidelity, spacing, typography, colors, borders, shadows, icons, and text content. Trigger whenever the user asks "does this match the figma", "verify the layout against the design", "check that the implementation matches", "is this faithful to the design", runs the `/verify-design` slash command, or pairs a Figma reference with a generated component path and asks to validate it. Do not auto-invoke after `compose-layout` runs — verification is now an opt-in step the user kicks off explicitly.
 
   Examples:
-
-  - Context: compose-layout has just written a new component file.
-    user: "compose this figma into test-react-shadcn: https://figma.com/file/abc/Page?node-id=12-345"
-    assistant: "[after Phase 4 completes] I'll now invoke the design-verifier subagent to confirm the implementation matches the Figma source."
-    <commentary>Proactive trigger at the end of compose-layout — exactly when this agent should fire.</commentary>
 
   - Context: user wants to validate a previously generated component.
     user: "Does src/UpgradeDialog.tsx actually match the figma at https://figma.com/file/abc/Modal?node-id=42-100?"

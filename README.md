@@ -38,7 +38,7 @@ check if my-storybook-repo has the right packages for aperia-ds5
 **2. Compose a layout** — turn a Figma design into a new component file in a target repo:
 
 ```
-/compose-layout https://www.figma.com/design/abc/.../node-id=1387-28899 my-storybook-repo
+/compose-layout <FIGMA_LINK> <REPO_NAME or PATH>
 ```
 
 **3. Verify a design** — compare an existing component against its Figma source:
