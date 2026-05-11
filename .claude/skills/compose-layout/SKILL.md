@@ -5,7 +5,7 @@ description: Implement a Figma design as a page or layout in a target repository
 
 # compose-layout
 
-Translate a Figma design into a page-level composition in a target repository, using the design system library that repository already has installed. The Figma design is code-connected to the library, so the work here is **composition, not invention** — you read the Figma data, look up each component's Code Connect mapping, and use the exact import paths and props the mapping provides.
+Translate a Figma design into a page-level composition in a target repository, using the design system library that repository already has installed. The work here is **composition, not invention** — prefer the Code Connect mapping where one exists, and use the exact import paths and props it specifies. Where a mapping is missing, fall back: first to a library export resolved by component name, and only if that also fails, to plain HTML elements styled with the library's design tokens. Never create new primitives in the target repo.
 
 ## Inputs
 
@@ -28,7 +28,7 @@ These variable names are the canonical way other shared artifacts (agent definit
 
 Other related variables, populated from the environment rather than from skill inputs:
 
-- `$SHADCN_COMPONENT_LIBRARY` and `$SHADCN_COMPONENT_LIBRARY_PACKAGE` (in `.env`) name the centralized shadcn library that the target repo links to. They are environment configuration, not per-invocation parameters.
+- `$APERIA_DS` (in `.env`) names the centralized design-system library that target repos consume. It is environment configuration, not a per-invocation parameter. The library's npm import name as installed in any specific target repo is detected at runtime by Phase 1 (read from `$TARGET_REPO/package.json` and bound to `$TARGET_REPO_PACKAGE`) — do not look it up from env.
 
 ## Workflow
 
@@ -59,16 +59,24 @@ Use the Figma MCP server to fetch the design referenced by `figma_link`. For eve
 Also capture:
 
 - Layout structure: containers, spacing, alignment, responsive behavior
-- Text content and any data placeholders
+- **Text content** — capture every text node's exact string verbatim, including casing, punctuation, smart vs straight quotes, and whitespace. Cover headings, labels, button copy, helper text, captions, placeholders, empty-state copy, link text, and any `aria-*` / tooltip strings. Note which strings are real copy vs. placeholders (lorem ipsum, "TODO", "Title here") so Phase 4 doesn't ship placeholders as if they were real copy.
 
-Flag any component that lacks a Code Connect mapping. **These are blockers, not candidates for improvisation.** A missing mapping means either the library is missing a primitive or the Figma file isn't fully wired up — both need a human decision.
+For every component instance, resolve to one of three tiers:
+
+1. **Confirmed** — Code Connect mapping is present; use it as-is.
+2. **Inferred** — no mapping, but the component name (case-insensitive) matches a barrel export from `$TARGET_REPO_PACKAGE`. Read the actual prop signature from the library source (do not invent props the library does not expose) and record this as inferred.
+3. **Improvised** — no mapping and no library export matches. Plan to use a plain HTML element styled with the library's design tokens (`text-foreground`, `bg-background`, semantic Tailwind classes). Never define new tokens locally and never create a new exported primitive in the target repo.
+
+Tier-2 and tier-3 resolutions are not blockers, but they must be surfaced in Phase 3 for explicit user review. The only true blockers at this phase are: the library is not installed, or the design needs a primitive type that does not exist anywhere in the library.
 
 ### Phase 3: Produce an inventory and confirm with the user
 
 Before writing any code, present a concise inventory containing:
 
-- Components found, with their Code Connect imports (using the library name detected in Phase 1)
-- Any components missing Code Connect mappings, called out clearly as blockers
+- Components with **confirmed Code Connect mappings**, listed with their import paths and props
+- Components with **inferred library equivalents** (no mapping, but a barrel export matched by name), listed with the inferred import and the prop signature read from the library source — call these out so the user can confirm or correct
+- Components that will be **improvised** as plain HTML + library design tokens, with the proposed element and class set
+- Any genuine blockers (e.g. the library is not installed, the design needs a primitive type that does not exist anywhere) — these still halt the run
 - **The proposed output file** — a new, standalone, importable component file. Include:
   - A proposed component name (derived from the Figma frame name, PascalCased)
   - A proposed file path that matches the repo's existing component-location convention detected in Phase 1
@@ -84,8 +92,9 @@ This checkpoint exists specifically to catch errors early. It is far cheaper to 
 Once the inventory is confirmed:
 
 - Write the component to the confirmed path as a **new file**. Do not edit, append to, or otherwise modify entry-point files (`App.tsx`, `main.tsx`, `index.tsx`, `app/page.tsx`, `pages/_app.*`, router config, etc.). Wiring the new component into the app is out of scope for this skill — the user will import it themselves.
-- Import every primitive from the library using the exact paths Code Connect provides
+- Implement each component instance per the tier resolved in Phase 2: confirmed mappings use the exact import path and props from Code Connect; inferred mappings use the library export resolved by name with the prop signature read from source; improvised cases use plain HTML elements styled with library design tokens
 - Compose the layout to match the Figma structure
+- **Render every Figma text node with its exact string** — do not paraphrase, abbreviate, sentence-case a Figma title, or substitute placeholder copy ("Button", "Label", lorem ipsum) when Figma has real copy. Preserve punctuation, casing, and quote style. Text supplied via props (`title`, `label`, `placeholder`, `aria-label`) counts.
 - Use the library's design tokens — semantic Tailwind classes like `bg-primary` and `text-muted-foreground` — rather than raw colors or pixel values
 - Verify imports resolve against the installed library
 - Report what was done: file path, components used, any assumptions made
@@ -140,10 +149,10 @@ Verification is a hard step, not a courtesy — its purpose is to catch Code Con
 
 These rules exist because this skill operates on a *target* repo while the design system is owned and centralized elsewhere. Local detours in the target repo create drift between the two and are very expensive to clean up later.
 
-- **Never create new primitive components in the target repository.** All primitives come from the installed library. If a required primitive does not exist there, stop and surface this as a library gap rather than working around it locally.
+- **Never create new primitive components in the target repository.** Primitives come from the installed library. When the library is missing a primitive but the design only needs a simple element (separator, container, text wrapper, etc.), use plain HTML styled with the library's design tokens — that is the tier-3 fallback. When the design needs a complex primitive the library does not expose (e.g. Card, Dialog, DropdownMenu), stop and surface this as a library gap rather than building it locally.
 - **Never run `shadcn add`** or any command that bypasses the centralized library.
 - **Never redefine CSS variables, colors, or design tokens locally** in the target repository. Tokens live in the library.
-- **Never invent component APIs.** If Code Connect provides a mapping, use the exact props shown. If it does not, stop.
+- **Never invent component APIs.** When Code Connect provides a mapping, use the exact props shown. When it does not, derive props from the library's actual exports — do not pass props the library does not declare.
 - **Never import from deep paths inside the library's build output** — use the library's root export only.
 - **Never modify the design system library itself** from this workflow. You operate only on the target repository.
 - **Never modify entry-point or router files.** The skill's only file output is the new, standalone component file (and optionally a Storybook story if the user opts in during Phase 5). Importing or rendering the new component anywhere else is the user's responsibility.
@@ -152,7 +161,7 @@ These rules exist because this skill operates on a *target* repo while the desig
 
 Stop and ask the user when:
 
-- A Figma component has no Code Connect mapping and no obvious library equivalent
+- A Figma component has no Code Connect mapping, no library export matched by name, and no plain-HTML fallback that fits (i.e. the design needs a primitive type the library does not expose)
 - The target repository does not have the required library installed
 - The project's conventions conflict with what Code Connect suggests
 - The target output path is ambiguous or would overwrite existing work
@@ -170,4 +179,4 @@ You do **not**:
 - Modify the design system
 - Add primitives
 
-Discover project conventions at runtime — do not assume them. Trust Code Connect as the authoritative source for Figma-to-code mapping. When in doubt, **stop and ask** rather than proceed with a guess.
+Discover project conventions at runtime — do not assume them. **Prefer** Code Connect as the source of Figma-to-code mapping; fall back to the library's actual exports when no mapping exists. When in doubt, **stop and ask** rather than proceed with a guess.
