@@ -7,6 +7,8 @@ description: Implement a Figma design as a page or layout in a target repository
 
 Translate a Figma design into a page-level composition in a target repository, using the design system library that repository already has installed. The work here is **composition, not invention** — prefer the Code Connect mapping where one exists, and use the exact import paths and props it specifies. Where a mapping is missing, fall back: first to a library export resolved by component name, and only if that also fails, to plain HTML elements styled with the library's design tokens. Never create new primitives in the target repo.
 
+For multi-section designs (full-page frames, dashboards, mail layouts, marketing pages — anything with several visually distinct content blocks), **decompose the design into a small set of co-located sub-components plus one assembling page component**. Each sub-component owns one semantic section of the design (header, sidebar, stat card, hero, footer, etc.) and the page component composes them to match the Figma layout. Sub-components written here are page-specific composition shards, **not** primitives — the rule against creating new primitives in the target repo still applies.
+
 ## Inputs
 
 You operate on two parameters:
@@ -43,7 +45,8 @@ Follow these five phases in order. Do not skip ahead — each phase de-risks the
   - **Detect the design system library.** Look for an internal scoped dependency that the team owns — e.g. `@shad/components`, `@<org>/components`, `@<org>/ui`, `@<org>/design-system`. Record its **exact** package name from `package.json`. This is the library you will import from. The team's library name will change over time, so do not hardcode a name anywhere — derive it from `package.json` every single run.
   - Confirm the library is actually installed (present in `dependencies` or `devDependencies`).
 - Inspect one or two existing pages to understand the project's file structure, routing conventions, import patterns, and composition style.
-- **Detect the repo's component location and naming convention.** Look for an existing `src/components/`, `components/`, `src/ui/`, or similar directory. Note whether components are stored as flat files (`Foo.tsx`) or as dedicated directories (`Foo/Foo.tsx` + `Foo/index.ts` barrel). Record the pattern. If no components directory exists yet, default to creating `src/components/<ComponentName>/<ComponentName>.tsx` with an `index.ts` barrel re-export.
+- **Detect the repo's component location and naming convention.** Look for an existing `src/components/`, `components/`, `src/ui/`, or similar directory. Note whether components are stored as flat files (`Foo.tsx`) or as dedicated directories (`Foo/Foo.tsx` + `Foo/index.ts` barrel). Record the pattern. When existing components are present, **strictly match** the detected pattern in Phase 4 — do not introduce a barrel where none exists, and do not flatten a directory layout. If no components directory exists yet, default to a flat `src/components/<ComponentName>.tsx` (no barrel). **When the page-level design will be decomposed (see Phase 2), all sub-components live co-located in the same `<ComponentName>/` directory as the page component** — never scattered across the wider `components/` tree. If the detected convention is flat files (no per-component directory), promote the decomposed page to its own directory and place all sub-components inside it; this is the one case where introducing a directory is correct.
+- **Detect the declaration style.** Sample 1–2 existing components and record whether they use `export function Foo` or `export const Foo = () =>`. Match the detected style in Phase 4. If no components exist yet, default to the arrow form: `export const Foo = (...) => {}`.
 
 If the design system library is not installed, or the project structure is incompatible with what the Figma design requires, **stop and report** rather than attempting to proceed. Do not try to install it or work around it.
 
@@ -61,6 +64,73 @@ Also capture:
 - Layout structure: containers, spacing, alignment, responsive behavior
 - **Text content** — capture every text node's exact string verbatim, including casing, punctuation, smart vs straight quotes, and whitespace. Cover headings, labels, button copy, helper text, captions, placeholders, empty-state copy, link text, and any `aria-*` / tooltip strings. Note which strings are real copy vs. placeholders (lorem ipsum, "TODO", "Title here") so Phase 4 doesn't ship placeholders as if they were real copy.
 
+#### Decompose the design into sub-components
+
+Before drafting any props, decide whether the design should be decomposed. Decomposition produces one file per semantic section plus an assembling page — much easier to read, test, and re-use than a single monolithic component. Apply these heuristics:
+
+- **Multi-section page-level frames** — a Figma frame containing several visually distinct sections (header bar + main content + sidebar, hero + features + footer, top-nav + body + right-rail). **Decompose**: one sub-component per section.
+- **Figma "Blocks / X" frames** — Figma's naming convention for reusable blocks. Treat each `Blocks / X` frame inside the design as a candidate sub-component named after the block (e.g. `Blocks / Statistic Card` → `StatCard.tsx`).
+- **Repeated complex items** — a list of items that each have their own internal structure (4 stat cards, N mail messages, N nav rows, N table rows). **Extract** a single sub-component for the item shape; the page renders the list with `.map()`.
+- **Single-card / simple composition** — a design that is one card, one form, one panel with no clear internal sections, or a small primitive arrangement (a labeled input, a card with title + body + button). **Do not decompose**. One file is correct; over-splitting a small component creates noise.
+
+Sub-components live co-located with the page in the same directory (per Phase 1's location rule). A typical decomposed layout looks like:
+
+```
+src/components/Dashboard/
+  Dashboard.tsx              ← assembles the sub-components
+  Dashboard.stories.tsx      ← page-level story
+  DashboardHeader.tsx        ← header section (user, nav, search)
+  DashboardHeader.stories.tsx
+  StatCard.tsx               ← one stat (rendered ×4 by the page)
+  StatCard.stories.tsx
+  OverviewChart.tsx          ← bar chart card
+  OverviewChart.stories.tsx
+  RecentSales.tsx            ← recent sales card
+  RecentSales.stories.tsx
+```
+
+Decomposition is **not** a license to invent new primitives. Each sub-component still composes library primitives (Card, Avatar, Input, Button, Tabs, …) plus plain HTML where appropriate. The page-specific shape lives in the sub-component file; the universal building blocks come from the library.
+
+##### Page assembly pattern — props flow via `React.ComponentProps<typeof Sub>`
+
+The page component exposes **one prop per sub-component instance**, typed by reading the sub-component's own prop shape:
+
+```ts
+type DashboardProps = {
+  header?: React.ComponentProps<typeof DashboardHeader>
+  stats?: React.ComponentProps<typeof StatCard>[]
+  chart?: React.ComponentProps<typeof OverviewChart>
+  recentSales?: React.ComponentProps<typeof RecentSales>
+  className?: string
+}
+```
+
+This keeps the page's surface narrow (one named slot per section) while letting each sub-component own its own internal prop surface — no prop duplication, no drift. The page renders each sub-component by **spreading the matching prop**:
+
+```tsx
+<DashboardHeader {...header} />
+{stats?.map((stat, i) => <StatCard key={i} {...stat} />)}
+<OverviewChart {...chart} />
+<RecentSales {...recentSales} />
+```
+
+When a section has no natural key (only one instance, like the chart), the page passes the prop directly. When a section repeats (stats), the page renders an array with `.map()` and an inline `key`. The page's own props (passthrough `className`, top-level layout) sit alongside the section props.
+
+#### Prop candidates
+
+For every interactive or content-bearing node, plan an optional prop. When the design is decomposed, **apply these rules per sub-component** — each sub-component owns the props for its own section, and the page exposes one prop per sub-component instance using `React.ComponentProps<typeof Sub>` (see "Page assembly pattern" above). **No prop carries a Figma value as its destructure default** — captured Figma values live in the Storybook story's `args` (Phase 5), not inside the component. Name props by the **role they play in the layout**, not by Figma layer ID — `title`, `emailLabel`, `emailDescription` are good; `text_18748_247762` is not.
+
+- Every visible text node → optional string prop (e.g. `title`, `description`, `fullNameLabel`, `fullNamePlaceholder`, `emailDescription`, `footerText`). No destructure default. The captured Figma string (preserving casing, punctuation, trailing spaces, smart vs. straight quotes) is recorded in Phase 2 and carried into the story's `args` in Phase 5.
+- Every button → `on<ActionName>Click` callback prop, where `ActionName` is the button's text in PascalCase (e.g. `onCreateAccountClick`, `onSignUpWithGoogleClick`). No default — left `undefined`.
+- Every input → `on<FieldName>Change` callback prop. Default to **uncontrolled** (no `value` prop emitted). The consumer wires their own form state if they want controlled inputs.
+- Every link/anchor → `<linkRole>Href` string prop (e.g. `signUpHref`). No default. The story supplies the URL.
+- Every image → `<imageRole>Src` and `<imageRole>Alt` props. No defaults. The story supplies both.
+- **Repeated / list-shaped content** (nav rows, table rows, message cards, etc.) → a single array prop typed as `T[]` with a small inline `type` for the element (e.g. `messages?: MailMessage[]`). No default. JSX renders it with optional chaining: `messages?.map(...)`. The captured Figma data — every row's strings, icons, and badges — lives in the story's `args`, not as module-level constants in the component file.
+- The component's root element accepts a `className` passthrough merged onto the outermost container. Standard shadcn convention; useful for consumer layout/positioning overrides.
+- **Do not invent props the design does not motivate.** No link in the design → no `href` prop. No image → no `src`/`alt` prop. Props derive from observed Figma nodes only.
+
+#### Resolution tiers
+
 For every component instance, resolve to one of three tiers:
 
 1. **Confirmed** — Code Connect mapping is present; use it as-is.
@@ -77,16 +147,25 @@ Before writing any code, present a concise inventory containing:
 - Components with **inferred library equivalents** (no mapping, but a barrel export matched by name), listed with the inferred import and the prop signature read from the library source — call these out so the user can confirm or correct
 - Components that will be **improvised** as plain HTML + library design tokens, with the proposed element and class set
 - Any genuine blockers (e.g. the library is not installed, the design needs a primitive type that does not exist anywhere) — these still halt the run
-- **The proposed output file** — a standalone, importable component file. Include:
+- **Decomposition plan** — when the design is being decomposed (per Phase 2), list every sub-component with:
+  - Sub-component name (PascalCased, descriptive of the section — e.g. `DashboardHeader`, `StatCard`, `OverviewChart`)
+  - Co-located file path (`<ComponentName>/<SubName>.tsx`)
+  - Which Figma section / `Blocks / X` frame it maps to
+  - Whether it is rendered once or as a list (`.map()`) from the page
+  - Its own `type <SubName>Props` block in full
+  When the design is **not** decomposed (single-card / simple composition), state that explicitly and skip this item.
+- **Page assembly plan** — the page component's `type <PageName>Props` block, exposing one prop per sub-component instance via `React.ComponentProps<typeof Sub>` (or `React.ComponentProps<typeof Sub>[]` for repeated items), plus any page-level props (`className`, top-level layout slots). Show the JSX snippet that assembles the sub-components in the order they appear in the Figma frame.
+- **Proposed props** — the generated `type FooProps` block(s) in full. For a non-decomposed design this is a single block; for a decomposed design this is one block per sub-component plus the page's assembly block (covered by the two bullets above). No prop carries a destructure default; show the captured Figma value next to each text/href/image/array prop so the user sees where it will land in the Storybook story's `args` (Phase 5). The user can rename, drop, or extend props at this checkpoint — it is far cheaper to adjust the prop surface here than after the file is written. Treat props as a confirmable inventory item, on par with the component name and path.
+- **The proposed output file(s)** — when decomposed, the inventory lists every file that will be written (each sub-component + the page); when not decomposed, a single component file. In both cases, include:
   - A proposed component name (derived from the Figma frame name, PascalCased)
   - A proposed file path that matches the repo's existing component-location convention detected in Phase 1
   - An explicit note that the skill must never merge the design into `App.tsx`, `main.tsx`, `index.tsx`, `app/page.tsx`, `pages/_app.*`, or any other entry-point/router file
-  - **Existing-file check** — before presenting the inventory, test whether a file already exists at the proposed path. If it does, surface that fact prominently in the inventory and ask the user to choose:
+  - **Existing-file check** — before presenting the inventory, test whether a file already exists at **any** of the proposed paths (page **and** every sub-component). For each existing file, surface that fact prominently in the inventory and ask the user to choose per-file:
     - **Replace** — overwrite the existing file with the freshly composed output, discarding its current contents
     - **Update** — edit the existing file in place to bring it in line with the new Figma design, preserving any handwritten logic outside the parts the design dictates (event handlers, state, callbacks, data wiring)
     - **Write to a different path** — supply an alternative path, in which case the new path is the one to check for conflicts and the existing file is left untouched
 
-    Never overwrite or update silently. Do not assume one option over another based on apparent code quality — wait for an explicit choice.
+    Never overwrite or update silently. Do not assume one option over another based on apparent code quality — wait for an explicit choice. When several proposed files conflict, ask once with a per-file selection rather than bundling them under a single Replace/Update.
 - Any ambiguous layout or composition decisions that need resolving
 
 Wait for the user to confirm or correct this inventory — including the proposed component name and path — before implementing. Treat this as a hard checkpoint, not a courtesy.
@@ -97,31 +176,156 @@ This checkpoint exists specifically to catch errors early. It is far cheaper to 
 
 Once the inventory is confirmed:
 
-- Write the component at the confirmed path, honoring the user's Phase 3 choice:
+- **For decomposed designs, write each sub-component file first, then write the page component last** so the page's relative imports resolve against files that already exist. Each sub-component is a standalone file with its own `type <SubName>Props` block, its own declaration (matching the style detected in Phase 1), its own `className` passthrough, and its own imports from `$TARGET_REPO_PACKAGE` / lucide / plain HTML per the tiers resolved in Phase 2.
+- **The page component** imports each sub-component from its co-located relative path (`./DashboardHeader`, `./StatCard`, …), declares its own props as one slot per sub-component instance using `React.ComponentProps<typeof Sub>` (and `[]` for repeated items), and renders the assembly by spreading the matching prop onto each sub-component. Use `.map()` with an inline `key` for repeated items.
+- For each file, honor the user's Phase 3 choice:
   - **New file** (no prior conflict) — create the file fresh with the fully composed output.
   - **Replace** — overwrite the existing file at the path with the fully composed output. Do not attempt to preserve any of the prior contents.
   - **Update** — edit the existing file in place. Apply the structural, layout, and styling changes the new design requires, but preserve handwritten logic that the design does not dictate (event handlers, props, state, hooks, callbacks, data wiring, comments). Use targeted edits (Edit tool, not Write) so unrelated code is not disturbed. If a clean update is impossible (e.g. the existing file's structure is incompatible with the new design), stop and tell the user — do not silently fall back to Replace.
 - In all cases, do not edit, append to, or otherwise modify entry-point files (`App.tsx`, `main.tsx`, `index.tsx`, `app/page.tsx`, `pages/_app.*`, router config, etc.). Wiring the new component into the app is out of scope for this skill — the user will import it themselves.
 - Implement each component instance per the tier resolved in Phase 2: confirmed mappings use the exact import path and props from Code Connect; inferred mappings use the library export resolved by name with the prop signature read from source; improvised cases use plain HTML elements styled with library design tokens
 - Compose the layout to match the Figma structure
-- **Render every Figma text node with its exact string** — do not paraphrase, abbreviate, sentence-case a Figma title, or substitute placeholder copy ("Button", "Label", lorem ipsum) when Figma has real copy. Preserve punctuation, casing, and quote style. Text supplied via props (`title`, `label`, `placeholder`, `aria-label`) counts.
+- **Render every Figma text node with its exact string** — do not paraphrase, abbreviate, sentence-case a Figma title, or substitute placeholder copy ("Button", "Label", lorem ipsum) when Figma has real copy. Preserve punctuation, casing, and quote style. Text supplied via props (`title`, `label`, `placeholder`, `aria-label`) counts. When the text is exposed as a prop, the verbatim string is carried by the Storybook story's `args` (Phase 5), not by a destructure default — the JSX consumes the prop variable directly, and a slot without a story arg (or explicit prop) renders empty.
 - Use the library's design tokens — semantic Tailwind classes like `bg-primary` and `text-muted-foreground` — rather than raw colors or pixel values
+- **Component shape.** Use the declaration style detected in Phase 1; default to an arrow function when none is detected:
+  - Declare `type <ComponentName>Props = { ... }` directly above the component. Every auto-generated prop is optional (`?:`). No `interface`, no `IFooProps` prefix, no `Readonly<>` wrapper.
+  - Declare the component as `export const <ComponentName> = ({ ... }: <ComponentName>Props) => { ... }`. No `import React`; rely on the project's JSX runtime (`"jsx": "react-jsx"` or equivalent).
+  - Destructure props with **no defaults** — e.g. `({ title, onCreateAccountClick, className }: CreateAccountCardProps) =>`. No prop carries a Figma value as a default; the matching Storybook story's `args` does.
+  - Apply the `className` passthrough to the root element. If the library exposes a class merger (e.g. `cn` from `aperia-ds5`) use it; otherwise template-string concat: `` `existing-classes ${className ?? ''}` ``.
+  - Wire each prop to the right JSX slot: text props replace the literal Figma string in the JSX; callback props attach to the matching event (`onClick`, `onChange`); href props attach to `<a>` elements; etc.
+  - **Array / list props are read with optional chaining** — `messages?.map(...)`, `navItems?.map(...)` — so the component degrades to an empty list when no data is supplied. Do **not** declare module-level constants (`const DEFAULT_MESSAGES = [...]`) or destructure defaults (`messages = DEFAULT_MESSAGES`) to seed list data; the captured Figma rows belong in the story's `args`.
+
+#### Worked example — the output shape
+
+This example shows a small **two-file decomposition**: a `StatCard` sub-component for the repeated stat-card section, and a `Dashboard` page component that composes a list of them. Each file declares props with **no defaults**. Every Figma-derived string lives in the matching story's `args` (last code block).
+
+For a single-card / simple design that should **not** be decomposed (per Phase 2), the same patterns apply to one file: one `type FooProps`, one `export function Foo(...)`, one story carrying every Figma string in `args`. No sub-components, no `React.ComponentProps<typeof Sub>` slots — just the single file. Phase 2 decides which shape applies.
+
+**Sub-component file — `Dashboard/StatCard.tsx`:**
+
+```tsx
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from 'aperia-ds5'
+
+type StatCardProps = {
+  label?: string
+  value?: string
+  change?: string
+  icon?: React.ReactNode
+  className?: string
+}
+
+export const StatCard = ({ label, value, change, icon, className }: StatCardProps) => {
+  return (
+    <Card className={className}>
+      <CardHeader>
+        <CardTitle className="text-sm font-medium">{label}</CardTitle>
+        <CardAction className="text-muted-foreground">{icon}</CardAction>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold text-card-foreground">{value}</div>
+        <p className="text-xs text-muted-foreground">{change}</p>
+      </CardContent>
+    </Card>
+  )
+}
+```
+
+**Page component — `Dashboard/Dashboard.tsx`:**
+
+```tsx
+import { DashboardHeader } from './DashboardHeader'
+import { OverviewChart } from './OverviewChart'
+import { RecentSales } from './RecentSales'
+import { StatCard } from './StatCard'
+
+type DashboardProps = {
+  header?: React.ComponentProps<typeof DashboardHeader>
+  stats?: React.ComponentProps<typeof StatCard>[]
+  chart?: React.ComponentProps<typeof OverviewChart>
+  recentSales?: React.ComponentProps<typeof RecentSales>
+  className?: string
+}
+
+export const Dashboard = ({ header, stats, chart, recentSales, className }: DashboardProps) => {
+  return (
+    <div className={`flex flex-col w-full bg-background text-foreground ${className ?? ''}`}>
+      <DashboardHeader {...header} />
+      <div className="flex flex-col gap-4 px-8 py-6">
+        <div className="flex items-center gap-4">
+          {stats?.map((stat, i) => (
+            <StatCard key={i} {...stat} className="flex-1 min-w-0" />
+          ))}
+        </div>
+        <div className="flex h-[490px] items-start gap-4">
+          <OverviewChart {...chart} className="flex-1 min-w-0 self-stretch" />
+          <RecentSales {...recentSales} className="flex-1 min-w-0 self-stretch" />
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+The page's prop type is **narrow** — one slot per section. The sub-components own their own internal prop surfaces, so changes to (say) `StatCard`'s props automatically flow into `DashboardProps['stats']` via `React.ComponentProps<typeof StatCard>` with no duplication.
+
+**Story — `Dashboard/Dashboard.stories.tsx`:** every Figma value lives in `args`, nested by section to mirror the page's prop shape. Icons and any other React-node values are imported and constructed in the story, never in the component.
+
+```tsx
+import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Activity, CreditCard, DollarSign, Users } from 'lucide-react'
+import { Dashboard } from './Dashboard'
+
+const meta = {
+  title: 'Components/Dashboard',
+  component: Dashboard,
+  parameters: { layout: 'fullscreen' },
+} satisfies Meta<typeof Dashboard>
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Default: Story = {
+  args: {
+    header: {
+      userName: 'Alicia Koch',
+      navItems: [{ label: 'Overview', active: true }, { label: 'Customers' }],
+      searchPlaceholder: 'Placeholder',
+    },
+    stats: [
+      { label: 'Total Revenue', value: '$45,231.89', change: '+20.1% from last month', icon: <DollarSign className="size-4" /> },
+      { label: 'Subscriptions', value: '+2350', change: '+180.1% from last month', icon: <Users className="size-4" /> },
+      { label: 'Sales', value: '+12,234', change: '+19% from last month', icon: <CreditCard className="size-4" /> },
+      { label: 'Active Now', value: '+573', change: '+201 since last hour', icon: <Activity className="size-4" /> },
+    ],
+    chart: { title: 'Overview', data: [{ month: 'Jan', heightPercent: 36 }, /* … */] },
+    recentSales: { title: 'Recent Sales', description: 'You made 265 sales this month.', sales: [/* … */] },
+  },
+}
+```
+
+Each sub-component also gets its own story (e.g. `StatCard.stories.tsx`) when Phase 5 is opted into — useful for isolating section work and for design verification per block.
+
 - Verify imports resolve against the installed library
 - Report what was done: file path, components used, any assumptions made
 
 ### Phase 5: Offer a Storybook story
 
-After the component file is written and verified, ask the user whether they would like a Storybook story scaffolded for the new component. Do not generate the story automatically — wait for explicit confirmation, since not every target repo uses Storybook and the user may want to defer or skip it.
+After the component file(s) are written and verified, ask the user whether they would like Storybook stories scaffolded. Do not generate stories automatically — wait for explicit confirmation, since not every target repo uses Storybook and the user may want to defer or skip it.
 
 When prompting:
 
 - Check whether the target repo has Storybook installed (look for `@storybook/*` in `package.json` or a `.storybook/` directory). Mention what you found so the user can make an informed call.
-- Propose a story file path that follows the repo's existing story conventions (e.g. co-located `*.stories.tsx` next to the component, or under a `stories/` directory — match what the repo already does).
-- Ask a single, direct question: "Would you like me to create a Storybook story for this component?"
+- Propose story file paths that follow the repo's existing story conventions (e.g. co-located `*.stories.tsx` next to each component, or under a `stories/` directory — match what the repo already does).
+- For decomposed designs, the default offer is **one story per file** (each sub-component + the page) — sub-component stories are useful for isolating section work and for design verification per block. Mention this in the question so the user knows the scope, and let them opt for "page only" or "skip" if they prefer.
+- For non-decomposed designs, ask the single-component version: "Would you like me to create a Storybook story for this component?"
 
 If the user confirms:
 
-- Write a story file that covers the default rendering of the composed layout.
+- Write a story file that **carries every Figma value as `args` on the default story** — text strings, hrefs, image `src`/`alt` pairs, and any array data captured in Phase 2. The default story exists specifically because the component has no built-in defaults; without `args`, the component renders empty slots. When a variant story diverges (error state, alternate copy, empty data), override the relevant entries in `args` rather than duplicating the JSX.
+- For decomposed designs:
+  - Each sub-component's story populates only **that section's** props with the Figma values for that section. Title each sub-component story as `Components/<PageName>/<SubName>` (e.g. `Components/Dashboard/StatCard`) so they group together in Storybook's sidebar.
+  - The **page story** populates **nested** args matching the page's prop shape — `args: { header: { ... }, stats: [...], chart: { ... }, recentSales: { ... } }` — re-using the same Figma values that appeared in the sub-component stories. Title it as `Components/<PageName>` (e.g. `Components/Dashboard`).
+- For **array / list data** (nav rows, message cards, table rows, etc.), construct the array literal inside the story file. Any React-node values within those items — icons, badges, custom render slots — are imported and referenced from the **story**, not the component. Example: if the component renders `inboxNavItems?.map(item => <>{item.icon} {item.label}</>)`, the story imports the icons from `lucide-react` and builds `inboxNavItems: [{ label: 'Inbox', icon: <Inbox className="size-4" />, count: '128' }, ...]` directly in `args`.
 - **Match the Storybook `layout` parameter to the Figma frame's sizing intent — do not copy it from a sibling story.** Read the design context returned by `get_design_context` for the Figma frame:
   - **Fluid / fill-parent layouts** — frames that emit `size-full`, `content-stretch`, `flex-1`, or whose root element spans via `w-full` — use `layout: "padded"` (gives canvas padding while letting the component stretch) or `layout: "fullscreen"` (no padding). `layout: "centered"` will shrink Storybook's canvas to content, and `w-full` will have no room to span into.
   - **Fixed-dimension compositions** — frames that emit explicit `w-[Npx] h-[Npx]` and contain no fluid children — use `layout: "centered"`.
@@ -138,13 +342,15 @@ In the closing summary, mention that the user can optionally run `/verify-design
 
 These rules exist because this skill operates on a *target* repo while the design system is owned and centralized elsewhere. Local detours in the target repo create drift between the two and are very expensive to clean up later.
 
-- **Never create new primitive components in the target repository.** Primitives come from the installed library. When the library is missing a primitive but the design only needs a simple element (separator, container, text wrapper, etc.), use plain HTML styled with the library's design tokens — that is the tier-3 fallback. When the design needs a complex primitive the library does not expose (e.g. Card, Dialog, DropdownMenu), stop and surface this as a library gap rather than building it locally.
+- **Never create new primitive components in the target repository.** Primitives are universal building blocks (Button, Card, Input, Avatar, Tabs, Dialog, DropdownMenu, …) and they come from the installed library. **Sub-components produced by decomposition are different** — they are page-specific composition shards (e.g. `DashboardHeader`, `StatCard`, `OverviewChart`) that *compose* library primitives to render one section of the design, and they are an expected output of this skill. They are not primitives and the rule against creating primitives does not block them. When the library is missing a primitive but the design only needs a simple element (separator, container, text wrapper, etc.), use plain HTML styled with the library's design tokens — that is the tier-3 fallback. When the design needs a complex primitive the library does not expose (e.g. Card, Dialog, DropdownMenu), stop and surface this as a library gap rather than building it locally.
 - **Never run `shadcn add`** or any command that bypasses the centralized library.
 - **Never redefine CSS variables, colors, or design tokens locally** in the target repository. Tokens live in the library.
 - **Never invent component APIs.** When Code Connect provides a mapping, use the exact props shown. When it does not, derive props from the library's actual exports — do not pass props the library does not declare.
 - **Never import from deep paths inside the library's build output** — use the library's root export only.
 - **Never modify the design system library itself** from this workflow. You operate only on the target repository.
-- **Never modify entry-point or router files.** The skill's only file output is a standalone component file — created fresh, replaced wholesale, or updated in place per the user's Phase 3 choice — plus optionally a Storybook story if the user opts in during Phase 5. Importing or rendering the new component anywhere else is the user's responsibility.
+- **Never modify entry-point or router files.** The skill's only file outputs are the page component plus its co-located sub-components (when decomposed) — each created fresh, replaced wholesale, or updated in place per the user's Phase 3 choice — plus optionally Storybook stories if the user opts in during Phase 5. Importing or rendering the new component anywhere else is the user's responsibility.
+- **Never hardcode swappable values inside JSX or in destructure defaults.** Text, href, image, and array props are consumed from the destructure with no defaults; the Figma values they would have carried live in the Storybook story's `args`. Do not declare module-level constants (`const DEFAULT_MESSAGES = [...]`) or destructure defaults (`messages = DEFAULT_MESSAGES`, `title = 'Create an account'`) inside the component file. The component renders empty slots without props — the story (or a real consumer) supplies the data.
+- **Never invent props the design does not motivate.** If the Figma has no link, do not add `signUpHref`. If it has no image, do not add `imageSrc`. Props derive from observed Figma nodes only.
 
 ## When to stop and escalate
 

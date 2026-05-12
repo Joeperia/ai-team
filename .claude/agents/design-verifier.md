@@ -145,7 +145,7 @@ Compare every property listed below that the node actually defines. Skip a prope
 - Missing text: Figma has it, JSX doesn't = **MAJOR**.
 - Extra text: JSX renders it, Figma doesn't = **MAJOR**.
 - Placeholder copy (`"Lorem ipsum"`, `"TODO"`, `"Button"`, `"Title here"`) where Figma has real copy = **MAJOR**, unless Figma itself is using lorem ipsum.
-- Parameterized without a default: Figma shows a specific string but JSX renders `{props.label}` with no matching default or story value = **MINOR** (the source-of-truth string must appear somewhere — default prop, story arg, or doc).
+- Parameterized: Figma shows a specific string but JSX renders `{props.label}`. Per the compose-layout convention, the source-of-truth string lives in the **Storybook story's `args`** (the primary expected location), not in a destructure default. Verdict: **OK** if a co-located `*.stories.tsx` carries the Figma string verbatim in `args` (or a JSDoc / inline doc records it); **MINOR** if the story arg / doc is missing entirely; never penalize the absence of a destructure default by itself.
 - Cover all forms: headings, labels, button copy, helper text, captions, placeholders, empty-state copy, footer text, link text, tooltip / `aria-*` text, and text passed via props (`title=""`, `label=""`, `placeholder=""`, `aria-label=""`).
 
 **Token integrity** — across the whole component
