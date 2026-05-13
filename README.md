@@ -28,24 +28,12 @@ A repo containing useful Claude Code skills, subagents, and slash commands — c
 
 ## Example Usage
 
-Run these from a Claude Code session opened in this repo.
+Run this from a Claude Code session opened in this repo.
 
-**1. Check library compatibility** — confirm a target repo has the packages needed for the design-system library:
-
-```
-check if my-storybook-repo has the right packages for aperia-ds5
-```
-
-**2. Compose a layout** — turn a Figma design into a new component file in a target repo:
+Compose a layout** — turn a Figma design into a new component file in a target repo:
 
 ```
 /compose-layout <FIGMA_LINK> <REPO_NAME or PATH>
-```
-
-**3. Verify a design** — compare an existing component against its Figma source:
-
-```
-/verify-design https://www.figma.com/design/abc/.../node-id=1387-28899 src/components/UpgradeDialog.tsx my-storybook-repo
 ```
 
 ## Configuration
