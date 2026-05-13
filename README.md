@@ -19,6 +19,7 @@ A repo containing useful Claude Code skills, subagents, and slash commands — c
    ```bash
    cp .env.example .env
    # then open .env and fill in FIGMA_PAT
+   # and the APERIA_DS (name of the aperia ds library)
    ```
 
 3. **Confirm the Figma desktop app is running** with Dev Mode enabled — the Figma-facing skills talk to the Figma MCP server, which is provided by the desktop app.

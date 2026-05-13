@@ -1,0 +1,542 @@
+import { ChevronsUpDown } from "lucide-react"
+import { Input } from "aperia-ds5"
+import { Avatar, AvatarImage, AvatarFallback, AvatarBadge } from "aperia-ds5"
+import { Calendar } from "lucide-react"
+import { Button } from "aperia-ds5"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "aperia-ds5"
+import { DollarSign } from "lucide-react"
+import { Users } from "lucide-react"
+import { CreditCard } from "lucide-react"
+import { Activity } from "lucide-react"
+
+const imgCircle = "http://localhost:3845/assets/0d8bcc874e45def5a7445b56a2c1cb0bbcf722ab.png";
+const imgVector1 = "http://localhost:3845/assets/7570fde45aee3320c3f87b330ce29f18ce230f60.svg";
+type InputProps = {
+  className?: string;
+  placeholderText?: string;
+  state?: "Default";
+  variant?: "Default";
+};
+
+function Input({ className, placeholderText = "Placeholder", state = "Default", variant = "Default" }: InputProps) {
+  return (
+    <div className={className || "bg-[var(--custom\\/background-dark\\:input\\\\30,white)] border-[length:var(--border-width\\/border,1px)] border-[var(--base\\/input,#e5e5e5)] border-solid content-stretch flex gap-[var(--spacing\\/1,0px)] h-[var(--height\\/h-8,32px)] items-center px-[var(--spacing\\/2-5,10px)] py-[var(--spacing\\/1,4px)] relative rounded-[var(--border-radius\\/rounded-lg,10px)] w-[373px]"} data-node-id="65:531">
+      <p className="flex-[1_0_0] font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] leading-[var(--text\/sm\/line-height,20px)] min-w-px not-italic overflow-hidden relative text-[14px] text-[color:var(--base\/muted-foreground,#737373)] text-ellipsis whitespace-nowrap" data-node-id="65:522">
+        {placeholderText}
+      </p>
+    </div>
+  );
+}
+type BlocksDashboardProps = {
+  className?: string;
+  size?: "lg";
+};
+
+function BlocksDashboard({ className, size = "lg" }: BlocksDashboardProps) {
+  return (
+    <div className={className || "content-stretch flex flex-col items-start overflow-clip relative w-[1280px]"} data-node-id="15005:206308">
+      <div className="bg-[var(--base\/background,white)] border-[var(--base\/border,#e5e5e5)] border-b-[length:var(--border-width\/border,1px)] border-solid content-stretch flex items-center justify-between pr-[var(--spacing\/6,24px)] relative shrink-0 w-full" data-node-id="15005:206309" data-name="Flex">
+        <div className="content-stretch flex gap-[var(--spacing\/6,24px)] h-[64px] items-center pl-[var(--spacing\/6,24px)] pr-[var(--spacing\/4,16px)] relative shrink-0" data-node-id="15005:206310" data-name="Flex">
+          <div className="bg-[var(--base\/background,white)] border-[length:var(--border-width\/border,1px)] border-[var(--base\/input,#e5e5e5)] border-solid content-stretch flex gap-[var(--spacing\/2,8px)] h-[40px] items-center overflow-clip px-[var(--spacing\/4,16px)] py-[var(--spacing\/2,8px)] relative rounded-[var(--border-radius\/rounded-md,8px)] shadow-[var(--shadow\/xs\/offset-x,0px)_var(--shadow\/xs\/offset-y,1px)_var(--shadow\/xs\/blur-radius,2px)_var(--shadow\/xs\/spread-radius,0px)_var(--shadow\/xs\/color,rgba(0,0,0,0.05))] shrink-0 w-[240px]" data-node-id="15005:206311" data-name="CommandTrigger">
+            <div className="content-stretch flex flex-[1_0_0] gap-[var(--spacing\/2,8px)] items-center min-w-px relative" data-node-id="15005:206312" data-name="Flex">
+              <div className="content-stretch flex items-center pr-[var(--spacing\/2,8px)] relative shrink-0" data-node-id="15005:206313" data-name="Div">
+                <div className="relative rounded-[38px] shrink-0 size-[20px]" data-node-id="15005:206314" data-name="Circle">
+                  <div aria-hidden="true" className="absolute inset-0 pointer-events-none rounded-[38px]">
+                    <div className="absolute bg-white inset-0 rounded-[38px]" />
+                    <img alt="" className="absolute max-w-none object-cover rounded-[38px] size-full" src={imgCircle} />
+                  </div>
+                </div>
+              </div>
+              <p className="flex-[1_0_0] font-[family-name:var(--font\/font-sans,'Inter:Medium',sans-serif)] leading-[var(--text\/sm\/line-height,20px)] min-w-px not-italic overflow-hidden relative text-[14px] text-[color:var(--base\/foreground,#0a0a0a)] text-ellipsis whitespace-nowrap" data-node-id="15005:206315">
+                Alicia Koch
+              </p>
+            </div>
+            <div className="opacity-[var(--opacity\/opacity-50,0.5)] relative shrink-0 size-[16px]" data-node-id="21149:30702" data-name="IconPlaceholder" />
+          </div>
+          <div className="content-stretch flex items-center justify-center relative shrink-0" data-node-id="15005:206317" data-name="Blocks / Menu Item">
+            <p className="font-[family-name:var(--font\/font-sans,'Inter:Medium',sans-serif)] leading-[var(--text\/sm\/line-height,20px)] not-italic relative shrink-0 text-[color:var(--base\/foreground,#0a0a0a)] text-[length:var(--text\/sm\/font-size,14px)] whitespace-nowrap" data-node-id="I15005:206317;505:95788">
+              Overview
+            </p>
+          </div>
+          <div className="content-stretch flex items-center justify-center relative shrink-0" data-node-id="15005:206318" data-name="Blocks / Menu Item">
+            <p className="font-[family-name:var(--font\/font-sans,'Inter:Medium',sans-serif)] leading-[var(--text\/sm\/line-height,20px)] not-italic relative shrink-0 text-[color:var(--base\/muted-foreground,#737373)] text-[length:var(--text\/sm\/font-size,14px)] whitespace-nowrap" data-node-id="I15005:206318;505:95789">
+              Customers
+            </p>
+          </div>
+          <div className="content-stretch flex items-center justify-center relative shrink-0" data-node-id="15005:206319" data-name="Blocks / Menu Item">
+            <p className="font-[family-name:var(--font\/font-sans,'Inter:Medium',sans-serif)] leading-[var(--text\/sm\/line-height,20px)] not-italic relative shrink-0 text-[color:var(--base\/muted-foreground,#737373)] text-[length:var(--text\/sm\/font-size,14px)] whitespace-nowrap" data-node-id="I15005:206319;505:95789">
+              Products
+            </p>
+          </div>
+          <div className="content-stretch flex items-center justify-center relative shrink-0" data-node-id="15005:206320" data-name="Blocks / Menu Item">
+            <p className="font-[family-name:var(--font\/font-sans,'Inter:Medium',sans-serif)] leading-[var(--text\/sm\/line-height,20px)] not-italic relative shrink-0 text-[color:var(--base\/muted-foreground,#737373)] text-[length:var(--text\/sm\/font-size,14px)] whitespace-nowrap" data-node-id="I15005:206320;505:95789">
+              Settings
+            </p>
+          </div>
+        </div>
+        <div className="content-stretch flex gap-[var(--spacing\/4,16px)] items-center relative shrink-0" data-node-id="15005:206321" data-name="Flex">
+          <Input />
+        </div>
+      </div>
+      <div className="bg-[var(--base\/background,white)] content-stretch flex flex-col gap-[var(--spacing\/4,16px)] items-start pb-[var(--spacing\/8,32px)] pt-[var(--spacing\/6,24px)] px-[var(--spacing\/8,32px)] relative shrink-0 w-full" data-node-id="15005:206324" data-name="Div">
+        <div className="content-stretch flex items-center justify-between relative shrink-0 w-full" data-node-id="15005:206325" data-name="Flex">
+          <p className="flex-[1_0_0] font-[family-name:var(--font\/font-sans,'Inter:Bold',sans-serif)] leading-[var(--text\/3xl\/line-height,36px)] min-w-px not-italic relative text-[color:var(--base\/card-foreground,#0a0a0a)] text-[length:var(--text\/3xl\/font-size,30px)] tracking-[var(--font\/letter-spacing\/tight,-0.4px)]" data-node-id="15005:206326">
+            Dashboard
+          </p>
+          <div className="content-stretch flex gap-[var(--spacing\/2,8px)] items-center relative shrink-0" data-node-id="15005:206327" data-name="Flex">
+            <div className="bg-[var(--custom\/background-dark\:input\\30,white)] border-[length:var(--border-width\/border,1px)] border-[var(--custom\/border-dark\:input-dark,#e5e5e5)] border-solid content-stretch flex gap-[var(--spacing\/2,8px)] h-[32px] items-center px-[var(--spacing\/2-5,10px)] py-[var(--spacing\/2,8px)] relative rounded-[var(--border-radius\/rounded-lg,10px)] shrink-0 w-[212px]" data-node-id="15005:206328" data-name="Date Picker">
+              <div className="relative shrink-0 size-[16px]" data-node-id="I15005:206328;334:4025" data-name="IconPlaceholder" />
+              <p className="flex-[1_0_0] font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] leading-[var(--text\/sm\/line-height,20px)] min-w-px not-italic overflow-hidden relative text-[14px] text-[color:var(--base\/foreground,#0a0a0a)] text-ellipsis whitespace-nowrap" data-node-id="I15005:206328;334:4026">
+                Jan 20, 2023 - Feb 09, 2023
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="content-stretch flex gap-[var(--spacing\/4,16px)] items-center relative shrink-0 w-full" data-node-id="15005:206331" data-name="Flex">
+          <div className="bg-[var(--base\/card,white)] border-[length:var(--border-width\/border,1px)] border-[var(--base\/border,#e5e5e5)] border-solid content-stretch flex flex-[1_0_0] flex-col gap-[var(--spacing\/2,8px)] items-start min-w-px overflow-clip p-[var(--spacing\/6,24px)] relative rounded-[var(--border-radius\/rounded-xl,14px)] shadow-[var(--shadow\/sm\/1\/offset-x,0px)_var(--shadow\/sm\/1\/offset-y,1px)_var(--shadow\/sm\/1\/blur-radius,3px)_var(--shadow\/sm\/1\/spread-radius,0px)_var(--shadow\/sm\/1\/color,rgba(0,0,0,0.1)),var(--shadow\/sm\/2\/offset-x,0px)_var(--shadow\/sm\/2\/offset-y,1px)_var(--shadow\/sm\/2\/blur-radius,2px)_var(--shadow\/sm\/2\/spread-radius,-1px)_var(--shadow\/sm\/2\/color,rgba(0,0,0,0.1))]" data-node-id="15005:206332" data-name="Blocks / Statistic Card">
+            <div className="content-stretch flex items-center justify-between relative shrink-0 w-full" data-node-id="I15005:206332;505:95889" data-name="Header">
+              <p className="font-[family-name:var(--font\/font-sans,'Inter:Medium',sans-serif)] leading-[var(--text\/sm\/line-height,20px)] not-italic relative shrink-0 text-[color:var(--base\/card-foreground,#0a0a0a)] text-[length:var(--text\/sm\/font-size,14px)] whitespace-nowrap" data-node-id="I15005:206332;505:95883">
+                Total Revenue
+              </p>
+              <div className="relative shrink-0 size-[16px]" data-node-id="I15005:206332;505:95890" data-name="IconPlaceholder" />
+            </div>
+            <div className="content-stretch flex flex-col items-start not-italic relative shrink-0 w-full" data-node-id="I15005:206332;505:95882" data-name="_Card / Header">
+              <div className="font-[family-name:var(--font\/font-sans,'Inter:Bold',sans-serif)] h-[32px] leading-[0] relative shrink-0 text-[color:var(--base\/card-foreground,#0a0a0a)] text-[length:var(--text\/2xl\/font-size,24px)] w-full" data-node-id="I15005:206332;505:95884">
+                <p className="leading-[var(--text\/2xl\/line-height,32px)] mb-0">$45,231.89</p>
+                <p className="leading-[var(--text\/2xl\/line-height,32px)] text-[24px]">​</p>
+              </div>
+              <p className="font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] leading-[var(--text\/xs\/line-height,16px)] relative shrink-0 text-[color:var(--base\/muted-foreground,#737373)] text-[length:var(--text\/xs\/font-size,12px)] w-full" data-node-id="I15005:206332;505:95885">
+                +20.1% from last month
+              </p>
+            </div>
+          </div>
+          <div className="bg-[var(--base\/card,white)] border-[length:var(--border-width\/border,1px)] border-[var(--base\/border,#e5e5e5)] border-solid content-stretch flex flex-[1_0_0] flex-col gap-[var(--spacing\/2,8px)] items-start min-w-px overflow-clip p-[var(--spacing\/6,24px)] relative rounded-[var(--border-radius\/rounded-xl,14px)] shadow-[var(--shadow\/sm\/1\/offset-x,0px)_var(--shadow\/sm\/1\/offset-y,1px)_var(--shadow\/sm\/1\/blur-radius,3px)_var(--shadow\/sm\/1\/spread-radius,0px)_var(--shadow\/sm\/1\/color,rgba(0,0,0,0.1)),var(--shadow\/sm\/2\/offset-x,0px)_var(--shadow\/sm\/2\/offset-y,1px)_var(--shadow\/sm\/2\/blur-radius,2px)_var(--shadow\/sm\/2\/spread-radius,-1px)_var(--shadow\/sm\/2\/color,rgba(0,0,0,0.1))]" data-node-id="15005:206333" data-name="Blocks / Statistic Card">
+            <div className="content-stretch flex items-center justify-between relative shrink-0 w-full" data-node-id="I15005:206333;505:95889" data-name="Header">
+              <p className="font-[family-name:var(--font\/font-sans,'Inter:Medium',sans-serif)] leading-[var(--text\/sm\/line-height,20px)] not-italic relative shrink-0 text-[color:var(--base\/card-foreground,#0a0a0a)] text-[length:var(--text\/sm\/font-size,14px)] whitespace-nowrap" data-node-id="I15005:206333;505:95883">
+                Subscriptions
+              </p>
+              <div className="relative shrink-0 size-[16px]" data-node-id="I15005:206333;505:95890" data-name="IconPlaceholder" />
+            </div>
+            <div className="content-stretch flex flex-col items-start not-italic relative shrink-0 w-full" data-node-id="I15005:206333;505:95882" data-name="_Card / Header">
+              <div className="font-[family-name:var(--font\/font-sans,'Inter:Bold',sans-serif)] h-[32px] leading-[0] relative shrink-0 text-[color:var(--base\/card-foreground,#0a0a0a)] text-[length:var(--text\/2xl\/font-size,24px)] w-full" data-node-id="I15005:206333;505:95884">
+                <p className="leading-[var(--text\/2xl\/line-height,32px)] mb-0">+2350</p>
+                <p className="leading-[var(--text\/2xl\/line-height,32px)] text-[24px]">​</p>
+              </div>
+              <p className="font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] leading-[var(--text\/xs\/line-height,16px)] relative shrink-0 text-[color:var(--base\/muted-foreground,#737373)] text-[length:var(--text\/xs\/font-size,12px)] w-full" data-node-id="I15005:206333;505:95885">
+                +180.1% from last month
+              </p>
+            </div>
+          </div>
+          <div className="bg-[var(--base\/card,white)] border-[length:var(--border-width\/border,1px)] border-[var(--base\/border,#e5e5e5)] border-solid content-stretch flex flex-[1_0_0] flex-col gap-[var(--spacing\/2,8px)] items-start min-w-px overflow-clip p-[var(--spacing\/6,24px)] relative rounded-[var(--border-radius\/rounded-xl,14px)] shadow-[var(--shadow\/sm\/1\/offset-x,0px)_var(--shadow\/sm\/1\/offset-y,1px)_var(--shadow\/sm\/1\/blur-radius,3px)_var(--shadow\/sm\/1\/spread-radius,0px)_var(--shadow\/sm\/1\/color,rgba(0,0,0,0.1)),var(--shadow\/sm\/2\/offset-x,0px)_var(--shadow\/sm\/2\/offset-y,1px)_var(--shadow\/sm\/2\/blur-radius,2px)_var(--shadow\/sm\/2\/spread-radius,-1px)_var(--shadow\/sm\/2\/color,rgba(0,0,0,0.1))]" data-node-id="15005:206334" data-name="Blocks / Statistic Card">
+            <div className="content-stretch flex items-center justify-between relative shrink-0 w-full" data-node-id="I15005:206334;505:95889" data-name="Header">
+              <p className="font-[family-name:var(--font\/font-sans,'Inter:Medium',sans-serif)] leading-[var(--text\/sm\/line-height,20px)] not-italic relative shrink-0 text-[color:var(--base\/card-foreground,#0a0a0a)] text-[length:var(--text\/sm\/font-size,14px)] whitespace-nowrap" data-node-id="I15005:206334;505:95883">
+                Sales
+              </p>
+              <div className="relative shrink-0 size-[16px]" data-node-id="I15005:206334;505:95890" data-name="IconPlaceholder" />
+            </div>
+            <div className="content-stretch flex flex-col items-start not-italic relative shrink-0 w-full" data-node-id="I15005:206334;505:95882" data-name="_Card / Header">
+              <div className="font-[family-name:var(--font\/font-sans,'Inter:Bold',sans-serif)] h-[32px] leading-[0] relative shrink-0 text-[color:var(--base\/card-foreground,#0a0a0a)] text-[length:var(--text\/2xl\/font-size,24px)] w-full" data-node-id="I15005:206334;505:95884">
+                <p className="leading-[var(--text\/2xl\/line-height,32px)] mb-0">+12,234</p>
+                <p className="leading-[var(--text\/2xl\/line-height,32px)] text-[24px]">​</p>
+              </div>
+              <p className="font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] leading-[var(--text\/xs\/line-height,16px)] relative shrink-0 text-[color:var(--base\/muted-foreground,#737373)] text-[length:var(--text\/xs\/font-size,12px)] w-full" data-node-id="I15005:206334;505:95885">
+                +19% from last month
+              </p>
+            </div>
+          </div>
+          <div className="bg-[var(--base\/card,white)] border-[length:var(--border-width\/border,1px)] border-[var(--base\/border,#e5e5e5)] border-solid content-stretch flex flex-[1_0_0] flex-col gap-[var(--spacing\/2,8px)] items-start min-w-px overflow-clip p-[var(--spacing\/6,24px)] relative rounded-[var(--border-radius\/rounded-xl,14px)] shadow-[var(--shadow\/sm\/1\/offset-x,0px)_var(--shadow\/sm\/1\/offset-y,1px)_var(--shadow\/sm\/1\/blur-radius,3px)_var(--shadow\/sm\/1\/spread-radius,0px)_var(--shadow\/sm\/1\/color,rgba(0,0,0,0.1)),var(--shadow\/sm\/2\/offset-x,0px)_var(--shadow\/sm\/2\/offset-y,1px)_var(--shadow\/sm\/2\/blur-radius,2px)_var(--shadow\/sm\/2\/spread-radius,-1px)_var(--shadow\/sm\/2\/color,rgba(0,0,0,0.1))]" data-node-id="15005:206335" data-name="Blocks / Statistic Card">
+            <div className="content-stretch flex items-center justify-between relative shrink-0 w-full" data-node-id="I15005:206335;505:95889" data-name="Header">
+              <p className="font-[family-name:var(--font\/font-sans,'Inter:Medium',sans-serif)] leading-[var(--text\/sm\/line-height,20px)] not-italic relative shrink-0 text-[color:var(--base\/card-foreground,#0a0a0a)] text-[length:var(--text\/sm\/font-size,14px)] whitespace-nowrap" data-node-id="I15005:206335;505:95883">
+                Active Now
+              </p>
+              <div className="relative shrink-0 size-[16px]" data-node-id="I15005:206335;505:95890" data-name="IconPlaceholder" />
+            </div>
+            <div className="content-stretch flex flex-col items-start not-italic relative shrink-0 w-full" data-node-id="I15005:206335;505:95882" data-name="_Card / Header">
+              <div className="font-[family-name:var(--font\/font-sans,'Inter:Bold',sans-serif)] h-[32px] leading-[0] relative shrink-0 text-[color:var(--base\/card-foreground,#0a0a0a)] text-[length:var(--text\/2xl\/font-size,24px)] w-full" data-node-id="I15005:206335;505:95884">
+                <p className="leading-[var(--text\/2xl\/line-height,32px)] mb-0">+573</p>
+                <p className="leading-[var(--text\/2xl\/line-height,32px)] text-[24px]">​</p>
+              </div>
+              <p className="font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] leading-[var(--text\/xs\/line-height,16px)] relative shrink-0 text-[color:var(--base\/muted-foreground,#737373)] text-[length:var(--text\/xs\/font-size,12px)] w-full" data-node-id="I15005:206335;505:95885">
+                +201 since last hour
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="content-stretch flex gap-[var(--spacing\/4,16px)] h-[490px] items-start relative shrink-0 w-full" data-node-id="15005:206336" data-name="Flex">
+          <div className="bg-[var(--base\/card,white)] border-[length:var(--border-width\/border,1px)] border-[var(--base\/border,#e5e5e5)] border-solid content-stretch flex flex-[1_0_0] flex-col gap-[var(--spacing\/6,24px)] items-start min-w-px overflow-clip p-[var(--spacing\/6,24px)] relative rounded-[var(--border-radius\/rounded-xl,14px)] self-stretch shadow-[var(--shadow\/sm\/1\/offset-x,0px)_var(--shadow\/sm\/1\/offset-y,1px)_var(--shadow\/sm\/1\/blur-radius,3px)_var(--shadow\/sm\/1\/spread-radius,0px)_var(--shadow\/sm\/1\/color,rgba(0,0,0,0.1)),var(--shadow\/sm\/2\/offset-x,0px)_var(--shadow\/sm\/2\/offset-y,1px)_var(--shadow\/sm\/2\/blur-radius,2px)_var(--shadow\/sm\/2\/spread-radius,-1px)_var(--shadow\/sm\/2\/color,rgba(0,0,0,0.1))]" data-node-id="15005:206337" data-name="Card">
+            <p className="font-[family-name:var(--font\/font-sans,'Inter:Semi_Bold',sans-serif)] leading-[var(--text\/base\/line-height,24px)] not-italic relative shrink-0 text-[color:var(--base\/card-foreground,#0a0a0a)] text-[length:var(--text\/base\/font-size,16px)] w-full" data-node-id="15005:206338">
+              Overview
+            </p>
+            <div className="content-stretch flex flex-col h-[353px] items-start relative shrink-0 w-full" data-node-id="15005:206339" data-name="Div">
+              <div className="h-[350px] relative shrink-0 w-full" data-node-id="15005:206340" data-name="Chart Wrapper">
+                <div className="absolute content-stretch flex flex-col inset-[6px_0_24px_50px] items-start justify-between" data-node-id="15005:206341" data-name="Charts / Grid">
+                  <div className="h-0 relative shrink-0 w-full" data-node-id="I15005:206341;449:6804">
+                    <div className="absolute inset-[-0.5px_0]">
+                      <img alt="" className="block max-w-none size-full" src={imgVector1} />
+                    </div>
+                  </div>
+                  <div className="h-0 relative shrink-0 w-full" data-node-id="I15005:206341;449:6805">
+                    <div className="absolute inset-[-0.5px_0]">
+                      <img alt="" className="block max-w-none size-full" src={imgVector1} />
+                    </div>
+                  </div>
+                  <div className="h-0 relative shrink-0 w-full" data-node-id="I15005:206341;449:6806">
+                    <div className="absolute inset-[-0.5px_0]">
+                      <img alt="" className="block max-w-none size-full" src={imgVector1} />
+                    </div>
+                  </div>
+                  <div className="h-0 relative shrink-0 w-full" data-node-id="I15005:206341;449:6809">
+                    <div className="absolute inset-[-0.5px_0]">
+                      <img alt="" className="block max-w-none size-full" src={imgVector1} />
+                    </div>
+                  </div>
+                  <div className="h-0 relative shrink-0 w-full" data-node-id="I15005:206341;449:6807">
+                    <div className="absolute inset-[-0.5px_0]">
+                      <img alt="" className="block max-w-none size-full" src={imgVector1} />
+                    </div>
+                  </div>
+                  <div className="absolute bottom-[-6px] content-stretch flex flex-col font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] items-end justify-between leading-none left-[-35px] not-italic text-[color:var(--base\/muted-foreground,#737373)] text-[length:var(--text\/xs\/font-size,12px)] text-right top-[-6px] w-[23px] whitespace-nowrap" data-node-id="I15005:206341;482:6138" data-name="Y Axis">
+                    <p className="relative shrink-0" data-node-id="I15005:206341;482:6133">
+                      $6000
+                    </p>
+                    <p className="relative shrink-0" data-node-id="I15005:206341;482:6134">
+                      $4500
+                    </p>
+                    <p className="relative shrink-0" data-node-id="I15005:206341;482:6135">
+                      $3000
+                    </p>
+                    <p className="relative shrink-0" data-node-id="I15005:206341;482:6136">
+                      $1500
+                    </p>
+                    <p className="relative shrink-0" data-node-id="I15005:206341;482:6137">
+                      $0
+                    </p>
+                  </div>
+                </div>
+                <div className="absolute content-stretch flex flex-col gap-[13px] inset-[57.14%_83.4%_6.86%_10.49%] items-center justify-end" data-node-id="15005:206342" data-name="Charts / Bar Chart / Layer">
+                  <div className="content-stretch flex flex-[1_0_0] items-end justify-center min-h-px relative w-full" data-node-id="I15005:206342;449:6313" data-name="Rectangles">
+                    <div className="content-stretch flex flex-[1_0_0] flex-col gap-[8px] h-full items-center justify-end min-w-px relative" data-node-id="I15005:206342;449:6310" data-name="Charts / Bar Chart / Rectangle">
+                      <div className="flex-[1_0_0] min-h-px overflow-clip relative rounded-[5px] w-full" data-node-id="I15005:206342;449:6310;449:6493" data-name="Rectangle Wrapper">
+                        <div className="absolute bg-[var(--base\/primary,#171717)] inset-0" data-node-id="I15005:206342;449:6310;449:6298" data-name="Rectangle" />
+                      </div>
+                    </div>
+                  </div>
+                  <p className="-translate-x-1/2 absolute bottom-[-12px] font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] leading-none left-1/2 not-italic text-[color:var(--base\/muted-foreground,#737373)] text-[length:var(--text\/xs\/font-size,12px)] text-center translate-y-full whitespace-nowrap" data-node-id="I15005:206342;449:6297">
+                    Jan
+                  </p>
+                </div>
+                <div className="absolute content-stretch flex flex-col gap-[13px] inset-[13.14%_76.15%_6.86%_17.94%] items-center justify-end" data-node-id="15005:206343" data-name="Charts / Bar Chart / Layer">
+                  <div className="content-stretch flex flex-[1_0_0] items-end justify-center min-h-px relative w-full" data-node-id="I15005:206343;449:6313" data-name="Rectangles">
+                    <div className="content-stretch flex flex-[1_0_0] flex-col gap-[8px] h-full items-center justify-end min-w-px relative" data-node-id="I15005:206343;449:6310" data-name="Charts / Bar Chart / Rectangle">
+                      <div className="flex-[1_0_0] min-h-px overflow-clip relative rounded-[5px] w-full" data-node-id="I15005:206343;449:6310;449:6493" data-name="Rectangle Wrapper">
+                        <div className="absolute bg-[var(--base\/primary,#171717)] inset-0" data-node-id="I15005:206343;449:6310;449:6298" data-name="Rectangle" />
+                      </div>
+                    </div>
+                  </div>
+                  <p className="-translate-x-1/2 absolute bottom-[-12px] font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] leading-none left-1/2 not-italic text-[color:var(--base\/muted-foreground,#737373)] text-[length:var(--text\/xs\/font-size,12px)] text-center translate-y-full whitespace-nowrap" data-node-id="I15005:206343;449:6297">
+                    Feb
+                  </p>
+                </div>
+                <div className="absolute content-stretch flex flex-col gap-[13px] inset-[47.14%_68.9%_6.86%_25.19%] items-center justify-end" data-node-id="15005:206344" data-name="Charts / Bar Chart / Layer">
+                  <div className="content-stretch flex flex-[1_0_0] items-end justify-center min-h-px relative w-full" data-node-id="I15005:206344;449:6313" data-name="Rectangles">
+                    <div className="content-stretch flex flex-[1_0_0] flex-col gap-[8px] h-full items-center justify-end min-w-px relative" data-node-id="I15005:206344;449:6310" data-name="Charts / Bar Chart / Rectangle">
+                      <div className="flex-[1_0_0] min-h-px overflow-clip relative rounded-[5px] w-full" data-node-id="I15005:206344;449:6310;449:6493" data-name="Rectangle Wrapper">
+                        <div className="absolute bg-[var(--base\/primary,#171717)] inset-0" data-node-id="I15005:206344;449:6310;449:6298" data-name="Rectangle" />
+                      </div>
+                    </div>
+                  </div>
+                  <p className="-translate-x-1/2 absolute bottom-[-12px] font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] leading-none left-1/2 not-italic text-[color:var(--base\/muted-foreground,#737373)] text-[length:var(--text\/xs\/font-size,12px)] text-center translate-y-full whitespace-nowrap" data-node-id="I15005:206344;449:6297">
+                    Mar
+                  </p>
+                </div>
+                <div className="absolute content-stretch flex flex-col gap-[13px] inset-[32.29%_61.45%_6.86%_32.63%] items-center justify-end" data-node-id="15005:206345" data-name="Charts / Bar Chart / Layer">
+                  <div className="content-stretch flex flex-[1_0_0] items-end justify-center min-h-px relative w-full" data-node-id="I15005:206345;449:6313" data-name="Rectangles">
+                    <div className="content-stretch flex flex-[1_0_0] flex-col gap-[8px] h-full items-center justify-end min-w-px relative" data-node-id="I15005:206345;449:6310" data-name="Charts / Bar Chart / Rectangle">
+                      <div className="flex-[1_0_0] min-h-px overflow-clip relative rounded-[5px] w-full" data-node-id="I15005:206345;449:6310;449:6493" data-name="Rectangle Wrapper">
+                        <div className="absolute bg-[var(--base\/primary,#171717)] inset-0" data-node-id="I15005:206345;449:6310;449:6298" data-name="Rectangle" />
+                      </div>
+                    </div>
+                  </div>
+                  <p className="-translate-x-1/2 absolute bottom-[-12px] font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] leading-none left-1/2 not-italic text-[color:var(--base\/muted-foreground,#737373)] text-[length:var(--text\/xs\/font-size,12px)] text-center translate-y-full whitespace-nowrap" data-node-id="I15005:206345;449:6297">
+                    Apr
+                  </p>
+                </div>
+                <div className="absolute content-stretch flex flex-col gap-[13px] inset-[57.14%_54.2%_6.86%_39.88%] items-center justify-end" data-node-id="15005:206346" data-name="Charts / Bar Chart / Layer">
+                  <div className="content-stretch flex flex-[1_0_0] items-end justify-center min-h-px relative w-full" data-node-id="I15005:206346;449:6313" data-name="Rectangles">
+                    <div className="content-stretch flex flex-[1_0_0] flex-col gap-[8px] h-full items-center justify-end min-w-px relative" data-node-id="I15005:206346;449:6310" data-name="Charts / Bar Chart / Rectangle">
+                      <div className="flex-[1_0_0] min-h-px overflow-clip relative rounded-[5px] w-full" data-node-id="I15005:206346;449:6310;449:6493" data-name="Rectangle Wrapper">
+                        <div className="absolute bg-[var(--base\/primary,#171717)] inset-0" data-node-id="I15005:206346;449:6310;449:6298" data-name="Rectangle" />
+                      </div>
+                    </div>
+                  </div>
+                  <p className="-translate-x-1/2 absolute bottom-[-12px] font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] leading-none left-1/2 not-italic text-[color:var(--base\/muted-foreground,#737373)] text-[length:var(--text\/xs\/font-size,12px)] text-center translate-y-full whitespace-nowrap" data-node-id="I15005:206346;449:6297">
+                    May
+                  </p>
+                </div>
+                <div className="absolute content-stretch flex flex-col gap-[13px] inset-[43.43%_46.95%_6.86%_47.14%] items-center justify-end" data-node-id="15005:206347" data-name="Charts / Bar Chart / Layer">
+                  <div className="content-stretch flex flex-[1_0_0] items-end justify-center min-h-px relative w-full" data-node-id="I15005:206347;449:6313" data-name="Rectangles">
+                    <div className="content-stretch flex flex-[1_0_0] flex-col gap-[8px] h-full items-center justify-end min-w-px relative" data-node-id="I15005:206347;449:6310" data-name="Charts / Bar Chart / Rectangle">
+                      <div className="flex-[1_0_0] min-h-px overflow-clip relative rounded-[5px] w-full" data-node-id="I15005:206347;449:6310;449:6493" data-name="Rectangle Wrapper">
+                        <div className="absolute bg-[var(--base\/primary,#171717)] inset-0" data-node-id="I15005:206347;449:6310;449:6298" data-name="Rectangle" />
+                      </div>
+                    </div>
+                  </div>
+                  <p className="-translate-x-1/2 absolute bottom-[-12px] font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] leading-none left-1/2 not-italic text-[color:var(--base\/muted-foreground,#737373)] text-[length:var(--text\/xs\/font-size,12px)] text-center translate-y-full whitespace-nowrap" data-node-id="I15005:206347;449:6297">
+                    Jun
+                  </p>
+                </div>
+                <div className="absolute content-stretch flex flex-col gap-[13px] inset-[57.14%_39.12%_6.86%_54.96%] items-center justify-end" data-node-id="15005:206348" data-name="Charts / Bar Chart / Layer">
+                  <div className="content-stretch flex flex-[1_0_0] items-end justify-center min-h-px relative w-full" data-node-id="I15005:206348;449:6313" data-name="Rectangles">
+                    <div className="content-stretch flex flex-[1_0_0] flex-col gap-[8px] h-full items-center justify-end min-w-px relative" data-node-id="I15005:206348;449:6310" data-name="Charts / Bar Chart / Rectangle">
+                      <div className="flex-[1_0_0] min-h-px overflow-clip relative rounded-[5px] w-full" data-node-id="I15005:206348;449:6310;449:6493" data-name="Rectangle Wrapper">
+                        <div className="absolute bg-[var(--base\/primary,#171717)] inset-0" data-node-id="I15005:206348;449:6310;449:6298" data-name="Rectangle" />
+                      </div>
+                    </div>
+                  </div>
+                  <p className="-translate-x-1/2 absolute bottom-[-12px] font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] leading-none left-1/2 not-italic text-[color:var(--base\/muted-foreground,#737373)] text-[length:var(--text\/xs\/font-size,12px)] text-center translate-y-full whitespace-nowrap" data-node-id="I15005:206348;449:6297">
+                    Jul
+                  </p>
+                </div>
+                <div className="absolute content-stretch flex flex-col gap-[13px] inset-[13.14%_31.87%_6.86%_62.21%] items-center justify-end" data-node-id="15005:206349" data-name="Charts / Bar Chart / Layer">
+                  <div className="content-stretch flex flex-[1_0_0] items-end justify-center min-h-px relative w-full" data-node-id="I15005:206349;449:6313" data-name="Rectangles">
+                    <div className="content-stretch flex flex-[1_0_0] flex-col gap-[8px] h-full items-center justify-end min-w-px relative" data-node-id="I15005:206349;449:6310" data-name="Charts / Bar Chart / Rectangle">
+                      <div className="flex-[1_0_0] min-h-px overflow-clip relative rounded-[5px] w-full" data-node-id="I15005:206349;449:6310;449:6493" data-name="Rectangle Wrapper">
+                        <div className="absolute bg-[var(--base\/primary,#171717)] inset-0" data-node-id="I15005:206349;449:6310;449:6298" data-name="Rectangle" />
+                      </div>
+                    </div>
+                  </div>
+                  <p className="-translate-x-1/2 absolute bottom-[-12px] font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] leading-none left-1/2 not-italic text-[color:var(--base\/muted-foreground,#737373)] text-[length:var(--text\/xs\/font-size,12px)] text-center translate-y-full whitespace-nowrap" data-node-id="I15005:206349;449:6297">
+                    Aug
+                  </p>
+                </div>
+                <div className="absolute content-stretch flex flex-col gap-[13px] inset-[47.14%_24.43%_6.86%_69.46%] items-center justify-end" data-node-id="15005:206350" data-name="Charts / Bar Chart / Layer">
+                  <div className="content-stretch flex flex-[1_0_0] items-end justify-center min-h-px relative w-full" data-node-id="I15005:206350;449:6313" data-name="Rectangles">
+                    <div className="content-stretch flex flex-[1_0_0] flex-col gap-[8px] h-full items-center justify-end min-w-px relative" data-node-id="I15005:206350;449:6310" data-name="Charts / Bar Chart / Rectangle">
+                      <div className="flex-[1_0_0] min-h-px overflow-clip relative rounded-[5px] w-full" data-node-id="I15005:206350;449:6310;449:6493" data-name="Rectangle Wrapper">
+                        <div className="absolute bg-[var(--base\/primary,#171717)] inset-0" data-node-id="I15005:206350;449:6310;449:6298" data-name="Rectangle" />
+                      </div>
+                    </div>
+                  </div>
+                  <p className="-translate-x-1/2 absolute bottom-[-12px] font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] leading-none left-1/2 not-italic text-[color:var(--base\/muted-foreground,#737373)] text-[length:var(--text\/xs\/font-size,12px)] text-center translate-y-full whitespace-nowrap" data-node-id="I15005:206350;449:6297">
+                    Sep
+                  </p>
+                </div>
+                <div className="absolute content-stretch flex flex-col gap-[13px] inset-[32.29%_17.18%_6.86%_76.91%] items-center justify-end" data-node-id="15005:206351" data-name="Charts / Bar Chart / Layer">
+                  <div className="content-stretch flex flex-[1_0_0] items-end justify-center min-h-px relative w-full" data-node-id="I15005:206351;449:6313" data-name="Rectangles">
+                    <div className="content-stretch flex flex-[1_0_0] flex-col gap-[8px] h-full items-center justify-end min-w-px relative" data-node-id="I15005:206351;449:6310" data-name="Charts / Bar Chart / Rectangle">
+                      <div className="flex-[1_0_0] min-h-px overflow-clip relative rounded-[5px] w-full" data-node-id="I15005:206351;449:6310;449:6493" data-name="Rectangle Wrapper">
+                        <div className="absolute bg-[var(--base\/primary,#171717)] inset-0" data-node-id="I15005:206351;449:6310;449:6298" data-name="Rectangle" />
+                      </div>
+                    </div>
+                  </div>
+                  <p className="-translate-x-1/2 absolute bottom-[-12px] font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] leading-none left-1/2 not-italic text-[color:var(--base\/muted-foreground,#737373)] text-[length:var(--text\/xs\/font-size,12px)] text-center translate-y-full whitespace-nowrap" data-node-id="I15005:206351;449:6297">
+                    Oct
+                  </p>
+                </div>
+                <div className="absolute content-stretch flex flex-col gap-[13px] inset-[57.14%_9.92%_6.86%_84.16%] items-center justify-end" data-node-id="15005:206352" data-name="Charts / Bar Chart / Layer">
+                  <div className="content-stretch flex flex-[1_0_0] items-end justify-center min-h-px relative w-full" data-node-id="I15005:206352;449:6313" data-name="Rectangles">
+                    <div className="content-stretch flex flex-[1_0_0] flex-col gap-[8px] h-full items-center justify-end min-w-px relative" data-node-id="I15005:206352;449:6310" data-name="Charts / Bar Chart / Rectangle">
+                      <div className="flex-[1_0_0] min-h-px overflow-clip relative rounded-[5px] w-full" data-node-id="I15005:206352;449:6310;449:6493" data-name="Rectangle Wrapper">
+                        <div className="absolute bg-[var(--base\/primary,#171717)] inset-0" data-node-id="I15005:206352;449:6310;449:6298" data-name="Rectangle" />
+                      </div>
+                    </div>
+                  </div>
+                  <p className="-translate-x-1/2 absolute bottom-[-12px] font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] leading-none left-1/2 not-italic text-[color:var(--base\/muted-foreground,#737373)] text-[length:var(--text\/xs\/font-size,12px)] text-center translate-y-full whitespace-nowrap" data-node-id="I15005:206352;449:6297">
+                    Nov
+                  </p>
+                </div>
+                <div className="absolute content-stretch flex flex-col gap-[13px] inset-[43.43%_2.48%_6.86%_91.41%] items-center justify-end" data-node-id="15005:206353" data-name="Charts / Bar Chart / Layer">
+                  <div className="content-stretch flex flex-[1_0_0] items-end justify-center min-h-px relative w-full" data-node-id="I15005:206353;449:6313" data-name="Rectangles">
+                    <div className="content-stretch flex flex-[1_0_0] flex-col gap-[8px] h-full items-center justify-end min-w-px relative" data-node-id="I15005:206353;449:6310" data-name="Charts / Bar Chart / Rectangle">
+                      <div className="flex-[1_0_0] min-h-px overflow-clip relative rounded-[5px] w-full" data-node-id="I15005:206353;449:6310;449:6493" data-name="Rectangle Wrapper">
+                        <div className="absolute bg-[var(--base\/primary,#171717)] inset-0" data-node-id="I15005:206353;449:6310;449:6298" data-name="Rectangle" />
+                      </div>
+                    </div>
+                  </div>
+                  <p className="-translate-x-1/2 absolute bottom-[-12px] font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] leading-none left-1/2 not-italic text-[color:var(--base\/muted-foreground,#737373)] text-[length:var(--text\/xs\/font-size,12px)] text-center translate-y-full whitespace-nowrap" data-node-id="I15005:206353;449:6297">
+                    Dec
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="bg-[var(--base\/card,white)] border-[length:var(--border-width\/border,1px)] border-[var(--base\/border,#e5e5e5)] border-solid content-stretch flex flex-[1_0_0] flex-col gap-[var(--spacing\/6,24px)] items-start min-w-px overflow-clip p-[var(--spacing\/6,24px)] relative rounded-[var(--border-radius\/rounded-xl,14px)] self-stretch shadow-[var(--shadow\/sm\/1\/offset-x,0px)_var(--shadow\/sm\/1\/offset-y,1px)_var(--shadow\/sm\/1\/blur-radius,3px)_var(--shadow\/sm\/1\/spread-radius,0px)_var(--shadow\/sm\/1\/color,rgba(0,0,0,0.1)),var(--shadow\/sm\/2\/offset-x,0px)_var(--shadow\/sm\/2\/offset-y,1px)_var(--shadow\/sm\/2\/blur-radius,2px)_var(--shadow\/sm\/2\/spread-radius,-1px)_var(--shadow\/sm\/2\/color,rgba(0,0,0,0.1))]" data-node-id="15005:206354" data-name="Card">
+            <div className="content-stretch flex flex-col gap-[var(--spacing\/1-5,6px)] items-start not-italic relative shrink-0 w-full" data-node-id="15005:206355" data-name="Flex Vertical">
+              <p className="font-[family-name:var(--font\/font-sans,'Inter:Semi_Bold',sans-serif)] leading-[var(--text\/base\/line-height,24px)] relative shrink-0 text-[color:var(--base\/card-foreground,#0a0a0a)] text-[length:var(--text\/base\/font-size,16px)] w-full" data-node-id="15005:206356">
+                Recent Sales
+              </p>
+              <p className="font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] leading-[var(--text\/sm\/line-height,20px)] relative shrink-0 text-[color:var(--base\/muted-foreground,#737373)] text-[length:var(--text\/sm\/font-size,14px)] w-full" data-node-id="15005:206357">
+                You made 265 sales this month.
+              </p>
+            </div>
+            <div className="content-stretch flex flex-col gap-[var(--spacing\/8,32px)] items-start relative shrink-0 w-full" data-node-id="17197:135662" data-name="Flex Vertical">
+              <div className="content-stretch flex gap-[var(--spacing\/4,16px)] items-center min-w-[85px] relative shrink-0 w-full" data-node-id="17197:135663" data-name="Blocks / User Item">
+                <div className="content-stretch flex flex-[1_0_0] flex-col items-start leading-[0] min-w-px not-italic relative text-[length:var(--text\/sm\/font-size,14px)] whitespace-nowrap" data-node-id="I17197:135663;505:96340" data-name="Text Wrapper">
+                  <div className="flex flex-col font-[family-name:var(--font\/font-sans,'Inter:Medium',sans-serif)] justify-center overflow-hidden relative shrink-0 text-[color:var(--base\/foreground,#0a0a0a)] text-ellipsis w-full" data-node-id="I17197:135663;505:96341">
+                    <p className="leading-[var(--text\/sm\/line-height,20px)] overflow-hidden text-[14px] text-ellipsis">Stephanie Nicol</p>
+                  </div>
+                  <div className="flex flex-col font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] justify-center overflow-hidden relative shrink-0 text-[color:var(--base\/muted-foreground,#737373)] text-ellipsis w-full" data-node-id="I17197:135663;505:96342">
+                    <p className="leading-[var(--text\/sm\/line-height,20px)] overflow-hidden text-[14px] text-ellipsis">steph56@gmail.com</p>
+                  </div>
+                </div>
+                <div className="flex flex-col font-[family-name:var(--font\/font-sans,'Inter:Medium',sans-serif)] justify-center leading-[0] not-italic overflow-hidden relative shrink-0 text-[color:var(--base\/foreground,#0a0a0a)] text-[length:var(--text\/base\/font-size,16px)] text-ellipsis whitespace-nowrap" data-node-id="I17197:135663;505:96343">
+                  <p className="leading-[var(--text\/base\/line-height,24px)] overflow-hidden text-[16px] text-ellipsis">$4,791.80</p>
+                </div>
+              </div>
+              <div className="content-stretch flex gap-[var(--spacing\/4,16px)] items-center min-w-[85px] relative shrink-0 w-full" data-node-id="17197:135664" data-name="Blocks / User Item">
+                <div className="content-stretch flex flex-[1_0_0] flex-col items-start leading-[0] min-w-px not-italic relative text-[length:var(--text\/sm\/font-size,14px)] whitespace-nowrap" data-node-id="I17197:135664;505:96340" data-name="Text Wrapper">
+                  <div className="flex flex-col font-[family-name:var(--font\/font-sans,'Inter:Medium',sans-serif)] justify-center overflow-hidden relative shrink-0 text-[color:var(--base\/foreground,#0a0a0a)] text-ellipsis w-full" data-node-id="I17197:135664;505:96341">
+                    <p className="leading-[var(--text\/sm\/line-height,20px)] overflow-hidden text-[14px] text-ellipsis">John Dukes</p>
+                  </div>
+                  <div className="flex flex-col font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] justify-center overflow-hidden relative shrink-0 text-[color:var(--base\/muted-foreground,#737373)] text-ellipsis w-full" data-node-id="I17197:135664;505:96342">
+                    <p className="leading-[var(--text\/sm\/line-height,20px)] overflow-hidden text-[14px] text-ellipsis">johnd@gmail.com</p>
+                  </div>
+                </div>
+                <div className="flex flex-col font-[family-name:var(--font\/font-sans,'Inter:Medium',sans-serif)] justify-center leading-[0] not-italic overflow-hidden relative shrink-0 text-[color:var(--base\/foreground,#0a0a0a)] text-[length:var(--text\/base\/font-size,16px)] text-ellipsis whitespace-nowrap" data-node-id="I17197:135664;505:96343">
+                  <p className="leading-[var(--text\/base\/line-height,24px)] overflow-hidden text-[16px] text-ellipsis">$9,336.08</p>
+                </div>
+              </div>
+              <div className="content-stretch flex gap-[var(--spacing\/4,16px)] items-center min-w-[85px] relative shrink-0 w-full" data-node-id="17197:135665" data-name="Blocks / User Item">
+                <div className="content-stretch flex flex-[1_0_0] flex-col items-start leading-[0] min-w-px not-italic relative text-[length:var(--text\/sm\/font-size,14px)] whitespace-nowrap" data-node-id="I17197:135665;505:96340" data-name="Text Wrapper">
+                  <div className="flex flex-col font-[family-name:var(--font\/font-sans,'Inter:Medium',sans-serif)] justify-center overflow-hidden relative shrink-0 text-[color:var(--base\/foreground,#0a0a0a)] text-ellipsis w-full" data-node-id="I17197:135665;505:96341">
+                    <p className="leading-[var(--text\/sm\/line-height,20px)] overflow-hidden text-[14px] text-ellipsis">Judith Rodriguez</p>
+                  </div>
+                  <div className="flex flex-col font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] justify-center overflow-hidden relative shrink-0 text-[color:var(--base\/muted-foreground,#737373)] text-ellipsis w-full" data-node-id="I17197:135665;505:96342">
+                    <p className="leading-[var(--text\/sm\/line-height,20px)] overflow-hidden text-[14px] text-ellipsis">judith@gmail.com</p>
+                  </div>
+                </div>
+                <div className="flex flex-col font-[family-name:var(--font\/font-sans,'Inter:Medium',sans-serif)] justify-center leading-[0] not-italic overflow-hidden relative shrink-0 text-[color:var(--base\/foreground,#0a0a0a)] text-[length:var(--text\/base\/font-size,16px)] text-ellipsis whitespace-nowrap" data-node-id="I17197:135665;505:96343">
+                  <p className="leading-[var(--text\/base\/line-height,24px)] overflow-hidden text-[16px] text-ellipsis">$8,338.52</p>
+                </div>
+              </div>
+              <div className="content-stretch flex gap-[var(--spacing\/4,16px)] items-center min-w-[85px] relative shrink-0 w-full" data-node-id="17197:135666" data-name="Blocks / User Item">
+                <div className="content-stretch flex flex-[1_0_0] flex-col items-start leading-[0] min-w-px not-italic relative text-[length:var(--text\/sm\/font-size,14px)] whitespace-nowrap" data-node-id="I17197:135666;505:96340" data-name="Text Wrapper">
+                  <div className="flex flex-col font-[family-name:var(--font\/font-sans,'Inter:Medium',sans-serif)] justify-center overflow-hidden relative shrink-0 text-[color:var(--base\/foreground,#0a0a0a)] text-ellipsis w-full" data-node-id="I17197:135666;505:96341">
+                    <p className="leading-[var(--text\/sm\/line-height,20px)] overflow-hidden text-[14px] text-ellipsis">Rodger Struck</p>
+                  </div>
+                  <div className="flex flex-col font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] justify-center overflow-hidden relative shrink-0 text-[color:var(--base\/muted-foreground,#737373)] text-ellipsis w-full" data-node-id="I17197:135666;505:96342">
+                    <p className="leading-[var(--text\/sm\/line-height,20px)] overflow-hidden text-[14px] text-ellipsis">roger@gmail.com</p>
+                  </div>
+                </div>
+                <div className="flex flex-col font-[family-name:var(--font\/font-sans,'Inter:Medium',sans-serif)] justify-center leading-[0] not-italic overflow-hidden relative shrink-0 text-[color:var(--base\/foreground,#0a0a0a)] text-[length:var(--text\/base\/font-size,16px)] text-ellipsis whitespace-nowrap" data-node-id="I17197:135666;505:96343">
+                  <p className="leading-[var(--text\/base\/line-height,24px)] overflow-hidden text-[16px] text-ellipsis">$741.28</p>
+                </div>
+              </div>
+              <div className="content-stretch flex gap-[var(--spacing\/4,16px)] items-center min-w-[85px] relative shrink-0 w-full" data-node-id="17197:135667" data-name="Blocks / User Item">
+                <div className="content-stretch flex flex-[1_0_0] flex-col items-start leading-[0] min-w-px not-italic relative text-[length:var(--text\/sm\/font-size,14px)] whitespace-nowrap" data-node-id="I17197:135667;505:96340" data-name="Text Wrapper">
+                  <div className="flex flex-col font-[family-name:var(--font\/font-sans,'Inter:Medium',sans-serif)] justify-center overflow-hidden relative shrink-0 text-[color:var(--base\/foreground,#0a0a0a)] text-ellipsis w-full" data-node-id="I17197:135667;505:96341">
+                    <p className="leading-[var(--text\/sm\/line-height,20px)] overflow-hidden text-[14px] text-ellipsis">Alex Buckmaster</p>
+                  </div>
+                  <div className="flex flex-col font-[family-name:var(--font\/font-sans,'Inter:Regular',sans-serif)] justify-center overflow-hidden relative shrink-0 text-[color:var(--base\/muted-foreground,#737373)] text-ellipsis w-full" data-node-id="I17197:135667;505:96342">
+                    <p className="leading-[var(--text\/sm\/line-height,20px)] overflow-hidden text-[14px] text-ellipsis">alexb23@gmail.com</p>
+                  </div>
+                </div>
+                <div className="flex flex-col font-[family-name:var(--font\/font-sans,'Inter:Medium',sans-serif)] justify-center leading-[0] not-italic overflow-hidden relative shrink-0 text-[color:var(--base\/foreground,#0a0a0a)] text-[length:var(--text\/base\/font-size,16px)] text-ellipsis whitespace-nowrap" data-node-id="I17197:135667;505:96343">
+                  <p className="leading-[var(--text\/base\/line-height,24px)] overflow-hidden text-[16px] text-ellipsis">$1,629.88</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+---SECTION---
+SUPER CRITICAL: The generated React+Tailwind code MUST be converted to match the target project's technology stack and styling system.
+1. Analyze the target codebase to identify: technology stack, styling approach, component patterns, and design tokens
+2. Convert React syntax to the target framework/library
+3. Transform all Tailwind classes to the target styling system while preserving exact visual design
+4. Follow the project's existing patterns and conventions
+DO NOT install any Tailwind as a dependency unless the user instructs you to do so.
+
+---SECTION---
+Node ids have been added to the code as data attributes, e.g. `data-node-id="1:2"`.
+---SECTION---
+These styles are contained in the design: text-sm/leading-normal/medium: Font(family: "font/font-sans", style: Medium, size: text/sm/font-size, weight: font-weight/medium, lineHeight: text/sm/line-height, letterSpacing: 0), shadow/xs: Effect(type: DROP_SHADOW, color: shadow/xs/color, offset: (shadow/xs/offset-x, shadow/xs/offset-y), radius: shadow/xs/blur-radius, spread: shadow/xs/spread-radius), text-sm/leading-normal/normal: Font(family: "font/font-sans", style: Regular, size: text/sm/font-size, weight: font-weight/normal, lineHeight: text/sm/line-height, letterSpacing: 0), shadow/sm: Effect(type: DROP_SHADOW, color: shadow/sm/2/color, offset: (shadow/sm/2/offset-x, shadow/sm/2/offset-y), radius: shadow/sm/2/blur-radius, spread: shadow/sm/2/spread-radius); Effect(type: DROP_SHADOW, color: shadow/sm/1/color, offset: (shadow/sm/1/offset-x, shadow/sm/1/offset-y), radius: shadow/sm/1/blur-radius, spread: shadow/sm/1/spread-radius), text-2xl/leading-normal/bold: Font(family: "font/font-sans", style: Bold, size: text/2xl/font-size, weight: font-weight/bold, lineHeight: text/2xl/line-height, letterSpacing: 0), text-xs/leading-normal/normal: Font(family: "font/font-sans", style: Regular, size: text/xs/font-size, weight: font-weight/normal, lineHeight: text/xs/line-height, letterSpacing: 0), text-base/leading-normal/semibold: Font(family: "font/font-sans", style: Semi Bold, size: text/base/font-size, weight: font-weight/semibold, lineHeight: text/base/line-height, letterSpacing: 0), text-xs/leading-none/normal: Font(family: "font/font-sans", style: Regular, size: text/xs/font-size, weight: font-weight/normal, lineHeight: 1, letterSpacing: 0), text-base/leading-normal/medium: Font(family: "font/font-sans", style: Medium, size: text/base/font-size, weight: font-weight/medium, lineHeight: text/base/line-height, letterSpacing: 0).
+---SECTION---
+If the node is connected to a code component in the users codebase via Code Connect, the connected component will be included in the final markup wrapped in a CodeConnectSnippet element, with relevant imports at the top of the file. There are two formats: 1. Single snippet: <CodeConnectSnippet data-snippet-language="React"><TitleComponent>Hello World</TitleComponent></CodeConnectSnippet> 2. Multiple options: <CodeConnectSnippet data-snippet-language="React" options={[<Button variant="primary" />, <Button variant="secondary" />]} /> IMPORTANT: the CodeConnectSnippet wrapper element should not be part of the final code. For the options format, choose the single most appropriate option to use in your implementation. The source of the code component will be in the import path, e.g. import {ComponentName } from 'path/to/component'; IMPORTANT: the import path may not be relative/may point to a URL, so you should search for the component in the codebase and MUST use it if possible.
+---SECTION---
+Component descriptions: The following components have usage descriptions or documentation links defined in Figma. These descriptions provide important context about the intended usage, best practices, and any constraints for each component. Follow these guidelines when implementing or using these components.
+
+## Blocks / Dashboard
+**Node ID:** 15005:206307
+
+**Documentation:**
+- [https://ui.shadcn.com/examples/dashboard](https://ui.shadcn.com/examples/dashboard)
+
+## Lucide Icon / ChevronsUpDown
+**Node ID:** 5197:4013
+
+vertical, bidirectional, up down, double arrows, scroll, navigation control, reorder, move, drag and drop, direction indicator
+
+## Variant=Default, State=Default
+**Node ID:** 65:531
+
+**Documentation:**
+- [https://ui.shadcn.com/docs/components/input#with-label](https://ui.shadcn.com/docs/components/input#with-label)
+
+## Input
+**Node ID:** 65:533
+
+**Documentation:**
+- [https://ui.shadcn.com/docs/components/input](https://ui.shadcn.com/docs/components/input)
+
+## Type=Image, Size=xl
+**Node ID:** 23:994
+
+**Documentation:**
+- [https://ui.shadcn.com/docs/components/avatar](https://ui.shadcn.com/docs/components/avatar)
+
+## Date Picker
+**Node ID:** 334:4051
+
+**Documentation:**
+- [https://ui.shadcn.com/docs/components/date-picker](https://ui.shadcn.com/docs/components/date-picker)
+
+## Lucide Icon / Calendar
+**Node ID:** 5197:4053
+
+date, schedule, appointment, event, day planner, time management, reminder, month view, year view
+
+## Variant=Default, State=Default, Size=default
+**Node ID:** 37:930
+
+**Documentation:**
+- [https://ui.shadcn.com/docs/components/button#primary](https://ui.shadcn.com/docs/components/button#primary)
+
+## Button
+**Node ID:** 37:931
+
+**Documentation:**
+- [https://ui.shadcn.com/docs/components/button](https://ui.shadcn.com/docs/components/button)
+
+## Variant=Default, Orientation=Default
+**Node ID:** 183:539
+
+**Documentation:**
+- [https://ui.shadcn.com/docs/components/tabs](https://ui.shadcn.com/docs/components/tabs)
+
+## Lucide Icon / DollarSign
+**Node ID:** 5197:3852
+
+currency, money, cash, finance, payment, wealth, capital, funds, affluence, prosperity
+
+## Lucide Icon / Users
+**Node ID:** 5197:3035
+
+people, multiple users, team, group, members, employees, crowd, personnel, staff, workforce
+
+## Lucide Icon / CreditCard
+**Node ID:** 5197:3889
+
+payment card, debit card, bank card, credit payment, plastic money, purchase method, digital payment, cashless transaction
+
+## Lucide Icon / Activity
+**Node ID:** 5197:4442
+
+action tracker, motion monitoring, exercise log, footsteps counter, movement detection, fitness data, progress tracking, workout history
+---SECTION---
+Image assets are stored on a localhost server. Clients can use these images directly in code as a way to view the image assets the same way they would other remote servers. Images and SVGs will be stored as constants, e.g. const image = 'http://localhost:3845/assets/10c13ac1a228a365cb98a0064b1d5afbc84887b2.png' These constants will be used in the code as the source for the image, e.g. <img src={image} /> This is true for both images and SVGs, so you can use the same approach for both types of assets.
+---SECTION---
+IMPORTANT: After you call this tool, you MUST call get_screenshot to get a screenshot of the node for context.
