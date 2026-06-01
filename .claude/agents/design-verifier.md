@@ -1,7 +1,7 @@
 ---
 name: design-verifier
 description: |
-  Verify that a generated component implementation matches its Figma source design. Invoke this agent to confirm Code Connect compliance, variant correctness, token usage, structural fidelity, spacing, typography, colors, borders, shadows, icons, and text content. Trigger whenever the user asks "does this match the figma", "verify the layout against the design", "check that the implementation matches", "is this faithful to the design", runs the `/verify-design` slash command, or pairs a Figma reference with a generated component path and asks to validate it. Do not auto-invoke after `compose-layout` runs — verification is now an opt-in step the user kicks off explicitly.
+  Verify that a generated component implementation matches its Figma source design. Invoke this agent to confirm Code Connect compliance, variant correctness, token usage, structural fidelity, spacing, typography, colors, borders, shadows, icons, and text content. Trigger whenever the user asks "does this match the figma", "verify the layout against the design", "check that the implementation matches", "is this faithful to the design", runs the `/verify-design` slash command, or pairs a Figma reference with a generated component path and asks to validate it. Do not auto-invoke after `implement-design` runs — verification is now an opt-in step the user kicks off explicitly.
 
   Examples:
 
@@ -30,7 +30,7 @@ The spawning prompt provides these values. Bind them on entry and refer to them 
 - `$FIGMA_LINK` — Figma URL or node-id pointing at the source design
 - `$TARGET_REPO` — path to the repo containing the generated component
 - `$COMPONENT_PATH` — path to the generated component file (absolute, or relative to `$TARGET_REPO`)
-- `$TARGET_REPO_PACKAGE` — design system package name detected by compose-layout (e.g. `@<org>/components`)
+- `$APERIA_DS_PACKAGE` — design system package name detected by implement-design (e.g. `@<org>/components`)
 - `$STORY_PATH` — *optional* — path to a generated Storybook story file, if one exists
 
 If any required input is missing or invalid, stop and ask before proceeding. Do not guess.
@@ -45,10 +45,10 @@ For each component instance in the Figma design:
 
 - Use `mcp__figma-desktop__get_code_connect_map` and `mcp__figma-desktop__get_code_connect_suggestions` to retrieve the mapping.
 - Read `$COMPONENT_PATH` and inspect its imports.
-- Confirm: the import path matches the mapping's specified import (from `$TARGET_REPO_PACKAGE`, not from a deep path or a different library).
+- Confirm: the import path matches the mapping's specified import (from `$APERIA_DS_PACKAGE`, not from a deep path or a different library).
 - Confirm: the JSX uses the exact component name the mapping specifies (e.g. `<Button>`, not `<button>`, not a custom wrapper).
 
-A mismatch = **CRITICAL**. A missing Code Connect mapping for a component the code uses = **MAJOR** (compose-layout should have stopped before writing this).
+A mismatch = **CRITICAL**. A missing Code Connect mapping for a component the code uses = **MAJOR** (implement-design should have stopped before writing this).
 
 ### Phase 2: Variant correctness — CRITICAL
 
@@ -145,7 +145,7 @@ Compare every property listed below that the node actually defines. Skip a prope
 - Missing text: Figma has it, JSX doesn't = **MAJOR**.
 - Extra text: JSX renders it, Figma doesn't = **MAJOR**.
 - Placeholder copy (`"Lorem ipsum"`, `"TODO"`, `"Button"`, `"Title here"`) where Figma has real copy = **MAJOR**, unless Figma itself is using lorem ipsum.
-- Parameterized: Figma shows a specific string but JSX renders `{props.label}`. Per the compose-layout convention, the source-of-truth string lives in the **Storybook story's `args`** (the primary expected location), not in a destructure default. Verdict: **OK** if a co-located `*.stories.tsx` carries the Figma string verbatim in `args` (or a JSDoc / inline doc records it); **MINOR** if the story arg / doc is missing entirely; never penalize the absence of a destructure default by itself.
+- Parameterized: Figma shows a specific string but JSX renders `{props.label}`. Per the implement-design convention, the source-of-truth string lives in either the **Storybook story's `args`** (when a co-located `*.stories.tsx` is present) or the **prop's destructure default** (when no story file was generated — implement-design's Phase 5 backfills defaults on the skip path). Verdict — **with a co-located `*.stories.tsx`**: **OK** if `args` carries the Figma string verbatim (or a JSDoc / inline doc records it); **MINOR** if neither `args` nor a doc captures it; never penalize the absence of a destructure default. Verdict — **without a co-located story**: **OK** if the destructure default carries the Figma string verbatim; **MAJOR** (treated as missing text) if neither a story arg nor a destructure default carries the string and the slot would render empty.
 - Cover all forms: headings, labels, button copy, helper text, captions, placeholders, empty-state copy, footer text, link text, tooltip / `aria-*` text, and text passed via props (`title=""`, `label=""`, `placeholder=""`, `aria-label=""`).
 
 **Token integrity** — across the whole component
@@ -221,7 +221,7 @@ If there are no findings in a section, write `(none)` rather than omitting the s
 - **Read-only on the target repo.** Use Read, Grep, and Glob to inspect `$COMPONENT_PATH` and any related files (CVA configs, design system component sources, Storybook stories at `$STORY_PATH`). Never edit.
 - **Code Connect is authoritative for mappings.** If a Figma component has a mapping, that mapping defines correct imports / props. Do not propose alternative imports, wrappers, or "improvements."
 - **Walk every node, check every property.** The default is exhaustive. A property is only skipped when Figma does not define it for that node, not because it "seems unimportant."
-- **Resolve through CVA and Code Connect props.** A class like `font-semibold` may come from a variant prop rather than appearing in the JSX. Follow `$TARGET_REPO_PACKAGE`'s component source (or its CVA config) to confirm what styling a given prop combination actually produces before declaring a mismatch.
+- **Resolve through CVA and Code Connect props.** A class like `font-semibold` may come from a variant prop rather than appearing in the JSX. Follow `$APERIA_DS_PACKAGE`'s component source (or its CVA config) to confirm what styling a given prop combination actually produces before declaring a mismatch.
 - **Source-analysis first, Figma screenshot second.** Phase 4 is source-only. Phase 5 uses `get_screenshot` as a secondary visual cross-check to catch what source can't see. Do not spawn a browser, dev server, or live render.
 - **Stay scoped.** Verify only the file at `$COMPONENT_PATH` (and `$STORY_PATH` if provided). Do not crawl the rest of the repo. Do not check unrelated lint, type, or accessibility issues — those belong to other tools.
 - **Stop and ask** if `$FIGMA_LINK` cannot be resolved by the MCP server, if `$COMPONENT_PATH` does not exist, or if Code Connect returns errors that prevent verification.

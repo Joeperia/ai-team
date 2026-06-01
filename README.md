@@ -30,10 +30,10 @@ A repo containing useful Claude Code skills, subagents, and slash commands — c
 
 Run this from a Claude Code session opened in this repo.
 
-Compose a layout** — turn a Figma design into a new component file in a target repo:
+Implement a design** — turn a Figma design into a new component file in a target repo:
 
 ```
-/compose-layout <FIGMA_LINK> <REPO_NAME or PATH>
+/implement-design <FIGMA_LINK> <REPO_NAME or PATH>
 ```
 
 ## Configuration
