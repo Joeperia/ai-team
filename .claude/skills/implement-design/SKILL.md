@@ -1,9 +1,9 @@
 ---
-name: compose-layout
+name: implement-design
 description: Implement a Figma design as a page or layout in a target repository, using whatever design system component library the target repo has installed (detected at runtime from the repo's package.json). Use this skill whenever the user pairs a Figma URL or node-ID with a target repository name — phrases like "build this Figma in [repo]", "implement [figma-link] as a page", "compose this layout", "turn this Figma into a page", "scaffold the design at [link] in [repo]", or any request that combines a Figma reference with a repo name. Trigger even if the user does not say "compose" — pairing a Figma reference with a target repo is the strong signal.
 ---
 
-# compose-layout
+# implement-design
 
 Translate a Figma design into a page-level composition in a target repository, using the design system library that repository already has installed. The work here is **composition, not invention** — prefer the Code Connect mapping where one exists, and use the exact import paths and props it specifies. Where a mapping is missing, fall back: first to a library export resolved by component name, and only if that also fails, to plain HTML elements styled with the library's design tokens. Never create new primitives in the target repo.
 
@@ -34,6 +34,16 @@ Refer to each variable by `$NAME` in prose; substitute the bound value when emit
 ## Workflow
 
 Follow these five phases in order. Do not skip ahead — each phase de-risks the next.
+
+**Track the workflow as a task list.** At the very start of the run — before any other action — create a task list containing all five phases as separate items, using their exact headings:
+
+1. `Phase 1: Orient to the target repository`
+2. `Phase 2: Read the Figma design`
+3. `Phase 3: Produce an inventory and confirm with the user`
+4. `Phase 4: Implement and verify`
+5. `Phase 5: Offer a Storybook story`
+
+As you work, mark each phase **in-progress** when you start it and **completed** as soon as it is done — one at a time, never batched. This gives the user a checklist view of the whole workflow up front and visible progress as each phase is checked off. Do this for every run, even when a later phase will obviously be short (e.g. the user is expected to decline Storybook in Phase 5) — the checklist must still show that phase being entered and completed.
 
 ### Phase 1: Orient to the target repository
 
@@ -116,22 +126,11 @@ When a section has no natural key (only one instance, like the chart), the page 
 
 #### Prop candidates
 
-For every interactive or content-bearing node, plan an optional prop. When the design is decomposed, **apply these rules per sub-component** — each sub-component owns the props for its own section, and the page exposes one prop per sub-component instance using `React.ComponentProps<typeof Sub>` (see "Page assembly pattern" above). **At Phase 4, no prop carries a Figma value as its destructure default** — captured Figma values flow to one of two source-of-truth locations decided in Phase 5: the Storybook story's `args` when a story is produced, or the prop's destructure default when Storybook is skipped. The captured value never appears as a hardcoded literal inside JSX. Name props by the **role they play in the layout**, not by Figma layer ID — `title`, `emailLabel`, `emailDescription` are good; `text_18748_247762` is not.
+For every interactive or content-bearing node, plan an optional prop. When the design is decomposed, **apply the per-node prop rules per sub-component** — each sub-component owns the props for its own section, and the page exposes one prop per sub-component instance using `React.ComponentProps<typeof Sub>` (see "Page assembly pattern" above).
 
-- Every visible text node → optional string prop (e.g. `title`, `description`, `fullNameLabel`, `fullNamePlaceholder`, `emailDescription`, `footerText`). The captured Figma string (preserving casing, punctuation, trailing spaces, smart vs. straight quotes) is recorded in Phase 2 and routed in Phase 5 to one of two locations: the story's `args` when a story is produced (component has no destructure default), or the prop's destructure default when Storybook is skipped.
-- Every button → `on<ActionName>Click` callback prop, where `ActionName` is the button's text in PascalCase (e.g. `onCreateAccountClick`, `onSignUpWithGoogleClick`). No default — left `undefined`.
-- Every input → `on<FieldName>Change` callback prop. Default to **uncontrolled** (no `value` prop emitted). Set static, design-driven HTML attributes **directly in the JSX (not as props)** — these are determined by the field's role, not by the consumer:
-  - `type`: `"email"` for an email field, `"password"` for password, `"search"` for search, `"tel"` for phone, `"url"` for URL, `"number"` for numeric, otherwise `"text"`. Detect the role from the Figma label, placeholder, or layer name.
-  - `name`: a role-derived identifier (`name="email"`, `name="password"`, `name="search"`).
-  - `autoComplete`: the matching token (`autoComplete="email"`, `"current-password"`, `"new-password"`, `"name"`, `"tel"`, `"off"` for search-style fields).
+Apply the per-node prop derivation rules in [`../CODING-STANDARDS.md`](../CODING-STANDARDS.md) §B (text → string prop, button → `on<ActionName>Click`, input → `on<FieldName>Change` with static HTML attrs in JSX, input+submit → `<form onSubmit>`, link → `<role>Href`, image → `<role>Src`/`<role>Alt`, repeated items → `T[]` with `.map()`, no invented props). Name props by the **role they play in the layout**, not by Figma layer ID.
 
-  Provide an accessible label for every input: if Figma shows a visible label node above or beside the field, render it as a `<label htmlFor={...}>` linked to the input by `id`; if the field is labeled only by placeholder or surrounding copy, apply `aria-label={...}` with the role-named string (taken from the same Figma node — never invented). The consumer wires their own form state if they want controlled inputs.
-- **Input + submit-button pairings live inside `<form>`.** When the design shows one or more inputs paired with a button that completes the field's primary action (a "Sign In" button next to an email field, a "Search" button next to a query field), wrap those nodes in a `<form>` element and replace the button's `on<ActionName>Click` prop with `onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void` on the form. This gives users Enter-to-submit, lets browsers and password managers recognize the field grouping, and makes the affordance announceable by assistive tech. The button inside the form is `type="submit"`; sibling buttons that aren't the form's action stay `type="button"` and keep their own `on<ActionName>Click` prop. Do not call `preventDefault` for the consumer — the prop is theirs.
-- Every link/anchor → `<linkRole>Href` string prop (e.g. `signUpHref`). The captured URL is routed in Phase 5 like text props — story `args` when a story is produced, destructure default when Storybook is skipped.
-- Every image → `<imageRole>Src` and `<imageRole>Alt` props. Captured `src` and `alt` are routed in Phase 5 like text props — story `args` when a story is produced, destructure defaults when Storybook is skipped.
-- **Repeated / list-shaped content** (nav rows, table rows, message cards, etc.) → a single array prop typed as `T[]` with a small inline `type` for the element (e.g. `messages?: MailMessage[]`). JSX renders it with optional chaining: `messages?.map(...)`. The captured Figma rows — every row's strings, icons, and badges — are routed in Phase 5: into the story's `args` when a story is produced, or into the prop's destructure default (an inline array literal, or a single `const` declared immediately above the component) when Storybook is skipped.
-- The component's root element accepts a `className` passthrough merged onto the outermost container. Standard shadcn convention; useful for consumer layout/positioning overrides.
-- **Do not invent props the design does not motivate.** No link in the design → no `href` prop. No image → no `src`/`alt` prop. Props derive from observed Figma nodes only.
+**At Phase 4, no prop carries a Figma value as its destructure default.** Captured Figma values flow to one of two source-of-truth locations decided in Phase 5: the Storybook story's `args` when a story is produced, or the prop's destructure default when Storybook is skipped. The captured value never appears as a hardcoded literal inside JSX (see CODING-STANDARDS §C.1).
 
 #### Resolution tiers
 
@@ -190,16 +189,7 @@ Once the inventory is confirmed:
 - Implement each component instance per the tier resolved in Phase 2: confirmed mappings use the exact import path and props from Code Connect; inferred mappings use the library export resolved by name with the prop signature read from source; improvised cases use plain HTML elements styled with library design tokens
 - Compose the layout to match the Figma structure
 - **Render every Figma text node with its exact string** — do not paraphrase, abbreviate, sentence-case a Figma title, or substitute placeholder copy ("Button", "Label", lorem ipsum) when Figma has real copy. Preserve punctuation, casing, and quote style. Text supplied via props (`title`, `label`, `placeholder`, `aria-label`) counts. The JSX always consumes the prop variable directly — never a hardcoded literal. Phase 5 then routes the verbatim string into either the story's `args` (story produced) or the prop's destructure default (Storybook skipped); at Phase 4 the slot renders empty until that routing happens.
-- Use the library's design tokens — semantic Tailwind classes like `bg-primary` and `text-muted-foreground` — rather than raw colors or pixel values
-- **Component shape.** Use the declaration style detected in Phase 1; default to an arrow function when none is detected:
-  - Declare `type <ComponentName>Props = { ... }` directly above the component. Every auto-generated prop is optional (`?:`). No `interface`, no `IFooProps` prefix, no `Readonly<>` wrapper.
-  - Declare the component as `export const <ComponentName> = ({ ... }: <ComponentName>Props) => { ... }`. No `import React`; rely on the project's JSX runtime (`"jsx": "react-jsx"` or equivalent).
-  - Destructure props **without defaults at this stage** — e.g. `({ title, onCreateAccountClick, className }: CreateAccountCardProps) =>`. Phase 5 backfills the captured Figma values: into the story's `args` when a story is produced (destructure stays default-free), or into the destructure defaults themselves when Storybook is skipped.
-  - Apply the `className` passthrough to the root element. If the library exposes a class merger (e.g. `cn` from `aperia-ds5`) use it; otherwise template-string concat: `` `existing-classes ${className ?? ''}` ``.
-  - Wire each prop to the right JSX slot: text props replace the literal Figma string in the JSX; callback props attach to the matching event (`onClick`, `onChange`); href props attach to `<a>` elements; etc.
-  - When a prior Phase 2 step identified an input + submit-button pairing, the JSX wrapper for those nodes is `<form onSubmit={...}>`, not `<div>`, and the submit button carries `type="submit"`.
-  - **Heading tags reflect the composition's role in a document, not Figma's typography.** The page-level composition's primary title is `<h1>`. When the design is decomposed, each sub-component's own section heading is `<h2>` (because the page that assembles them owns the `<h1>`); deeper nested headings step down to `<h3>` / `<h4>`. Do not copy Figma's font-size hierarchy onto the tag — Figma styles `<h1>`-sized text with CSS, but the HTML tag drives the accessibility tree and document outline. A standalone single-card composition (no parent page) is also `<h1>` for its title.
-  - **Array / list props are read with optional chaining** — `messages?.map(...)`, `navItems?.map(...)` — so the component degrades to an empty list when no data is supplied. At Phase 4, do not seed list data with module-level constants or destructure defaults; Phase 5 will route the captured Figma rows into the story's `args` (if a story is produced) or into the prop's destructure default — an inline array literal, or a single `const <ArrayName>: <ElementType>[] = [...]` declared immediately above the component when the array is too large to read inline (if Storybook is skipped).
+- **Emit the component per [`../CODING-STANDARDS.md`](../CODING-STANDARDS.md) §A (component structure), §B (per-node props wiring), §C (JSX content rules — verbatim text, no hardcoded values, heading hierarchy by document role, optional chaining for arrays), §D (Tailwind tokens, no raw colors), §G (accessible labels for inputs, semantic HTML).** Use the declaration style detected in Phase 1; default to the arrow form when none is detected. Destructure props **without defaults at this stage** — Phase 5 routes captured Figma values into either the story's `args` (Storybook produced) or the prop's destructure default (Storybook skipped).
 
 #### Worked example — the output shape
 
@@ -353,17 +343,12 @@ In the closing summary, mention that the user can optionally run `/verify-design
 
 ## Operating rules
 
-These rules exist because this skill operates on a *target* repo while the design system is owned and centralized elsewhere. Local detours in the target repo create drift between the two and are very expensive to clean up later.
+This skill operates on a *target* repo while the design system is owned and centralized elsewhere. Local detours in the target repo create drift between the two and are very expensive to clean up later. The hard "never" rules — no new primitives in the target repo, no `shadcn add`, no locally redefined tokens, no invented component APIs, no deep imports into the library, no edits to the design system, no hardcoded swappable values inside JSX, no props the design doesn't motivate — live in [`../CODING-STANDARDS.md`](../CODING-STANDARDS.md) §D, §E, §J. They apply in full here.
 
-- **Never create new primitive components in the target repository.** Primitives are universal building blocks (Button, Card, Input, Avatar, Tabs, Dialog, DropdownMenu, …) and they come from the installed library. **Sub-components produced by decomposition are different** — they are page-specific composition shards (e.g. `DashboardHeader`, `StatCard`, `OverviewChart`) that *compose* library primitives to render one section of the design, and they are an expected output of this skill. They are not primitives and the rule against creating primitives does not block them. When the library is missing a primitive but the design only needs a simple element (separator, container, text wrapper, etc.), use plain HTML styled with the library's design tokens — that is the tier-3 fallback. When the design needs a complex primitive the library does not expose (e.g. Card, Dialog, DropdownMenu), stop and surface this as a library gap rather than building it locally.
-- **Never run `shadcn add`** or any command that bypasses the centralized library.
-- **Never redefine CSS variables, colors, or design tokens locally** in the target repository. Tokens live in the library.
-- **Never invent component APIs.** When Code Connect provides a mapping, use the exact props shown. When it does not, derive props from the library's actual exports — do not pass props the library does not declare.
-- **Never import from deep paths inside the library's build output** — use the library's root export only.
-- **Never modify the design system library itself** from this workflow. You operate only on the target repository.
-- **Never modify entry-point or router files.** The skill's only file outputs are the page component plus its co-located sub-components (when decomposed) — each created fresh, replaced wholesale, or updated in place per the user's Phase 3 choice — plus optionally Storybook stories if the user opts in during Phase 5. Importing or rendering the new component anywhere else is the user's responsibility.
-- **Never hardcode swappable values inside JSX.** Text, href, image, and array props are always consumed from the destructure — never written as literal strings or arrays inline in JSX. Where those captured Figma values *land* is decided in Phase 5: the Storybook story's `args` when a story is produced (component has no destructure defaults), or the prop's destructure default (with arrays as an inline literal or a single `const` declared immediately above the component) when Storybook is skipped. Do not pre-emptively declare module-level constants or destructure defaults at Phase 4 — Phase 5's branch is the only place those get introduced, and only on the skip path.
-- **Never invent props the design does not motivate.** If the Figma has no link, do not add `signUpHref`. If it has no image, do not add `imageSrc`. Props derive from observed Figma nodes only.
+Two skill-specific framings on top of those rules:
+
+- **Sub-components produced by decomposition are not primitives.** They are page-specific composition shards (e.g. `DashboardHeader`, `StatCard`, `OverviewChart`) that *compose* library primitives to render one section of the design. The CODING-STANDARDS §J.3 ban on "new primitives in the target repo" does not block them.
+- **The skill's only file outputs** are the page component plus its co-located sub-components (when decomposed) — each created fresh, replaced wholesale, or updated in place per the user's Phase 3 choice — plus optionally Storybook stories if the user opts in during Phase 5. The skill never modifies entry-point or router files (CODING-STANDARDS §F.5). Importing or rendering the new component anywhere else is the user's responsibility.
 
 ## When to stop and escalate
 

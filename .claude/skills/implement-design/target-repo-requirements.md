@@ -1,4 +1,4 @@
-# Target Repo Requirements for `compose-layout`
+# Target Repo Requirements for `implement-design`
 
 For the skill to work end-to-end against a new target repository.
 
